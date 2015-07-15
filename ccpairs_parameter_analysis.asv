@@ -1,0 +1,458 @@
+function ccpairs_parameter_analysis(ccpairs)
+% ccpairs_parameter_analysis Analyzing various parameters from ccpairs data
+
+% Looks at delay, half width, ccc, best frequency, q, latency, and
+% bandwidth.
+
+% Input:
+% --------------------
+% ccpairs: Struct array that is output from
+% get_pairs_spkytype_strf_crosscorr. CURRENT DATA IS SAVED AS:
+% icc_crosscorr_strf_new2
+
+% Outputs:
+% --------------------
+% 1) Population histograms of peak delay, half width, and ccc, on both a
+%       linear and a semilog scale.
+% 2) Pairwise comparison scatterplots of best frequency, q, latency, and
+%       bandwidth.
+% 3) Comparison scatterplots of the differences in best frequency, q,
+%       latency, and bandwidth, each against delay, half width, and ccc.
+
+ccpairs_new = add_ccc_to_pairs_crosscorr_victor(ccpairs);
+
+delay = abs([ccpairs_new.peakdelay]);
+[min(delay) max(delay)];
+width = [ccpairs_new.halfwidth];
+ccc = [ccpairs_new.ccc];
+index = find(ccc<0);
+ccctemp = rand(size(index)) * 0.005;
+ccc(index) = ccctemp;
+
+BF1 = [ccpairs_new.cf1];
+BF2 = [ccpairs_new.cf2];
+Q1 = [ccpairs_new.q1];
+Q2 = [ccpairs_new.q2];
+L1 = [ccpairs_new.latency1];
+L2 = [ccpairs_new.latency2];
+BW1 = BF1./Q1;
+BW2 = BF2./Q2;
+
+deltaBF = abs(log2(BF1./BF2));
+deltaQ = abs(log2(Q1./Q2));
+deltaL = abs(log2(L1./L2));
+deltaL = abs(L1 - L2);
+deltaBW = abs(log2(BW1./BW2));
+
+
+e1 = linspace(min(delay),max(delay),20);
+e2 = linspace(min(width),max(width),20);
+e3 = linspace(min(ccc),max(ccc),20);
+
+e11 = 10.^(linspace(log(0.0001),log(max(delay)),50));
+e22 = 10.^(linspace(log(0.0001),log(max(width)),100));
+e33 = 10.^(linspace(log(0.0001),log(max(ccc)),50));
+
+
+
+x = histc(delay,e1);
+y = histc(width,e2);
+z = histc(ccc,e3);
+
+xx = histc(delay,e11);
+yy = histc(width,e22);
+zz = histc(ccc,e33);
+
+x = x./sum(x);
+y = y./sum(y);
+z = z./sum(z);
+
+xx = xx./sum(xx);
+yy = yy./sum(yy);
+zz = zz./sum(zz);
+
+% Population Histograms
+% figure;
+% subplot(2,1,1)
+% hb1 = bar(e1,x,'histc');
+% set(hb1, 'FaceColor', [0.6 0.6 0.6]);
+% xlabel('Peak Delay')
+% ylabel('Proportion')
+% title('Peak Delay Population Data')
+% 
+% subplot(2,1,2)
+% hb11 = bar(e11,xx,'histc');
+% c11 = get(gca,'children');
+% set(c11(1),'marker','none');
+% set(hb11, 'FaceColor', [0.6 0.6 0.6]);
+% set(gca,'xscale','log')
+% axis([0.01 100 0 0.8])
+% xlabel('Peak Delay')
+% ylabel('Proportion')
+% title('Peak Delay Population Data, log')
+% 
+% box off
+% tickpref
+% 
+% figure;
+% subplot(2,1,1)
+% hb2 = bar(e2,y,'histc');
+% set(hb2, 'FaceColor', [0.6 0.6 0.6]);
+% xlabel('Half Width')
+% ylabel('Proportion')
+% title('Half Width Population Data')
+% 
+% subplot(2,1,2)
+% hb22 = bar(e22,yy,'histc');
+% c11 = get(gca,'children');
+% set(c11(1),'marker','none');
+% set(gca,'xscale','log')
+% axis([0.5 10 0 0.5])
+% set(hb22, 'FaceColor', [0.6 0.6 0.6]);
+% xlabel('Half Width')
+% ylabel('Proportion')
+% title('Half Width Population Data, log')
+% 
+% box off
+% tickpref
+% 
+% figure;
+% subplot(2,1,1)
+% hb3 = bar(e3,z,'histc');
+% set(hb3, 'FaceColor', [0.6 0.6 0.6]);
+% xlabel('CCC')
+% ylabel('Proportion')
+% title('CCC Population Data')
+% 
+% subplot(2,1,2)
+% hb33 = bar(e33,zz,'histc');
+% c11 = get(gca,'children');
+% set(c11(1),'marker','none');
+% set(gca,'xscale','log')
+% axis([0.000001 0.1 0 0.2])
+% set(hb33, 'FaceColor', [0.6 0.6 0.6]);
+% xlabel('CCC')
+% ylabel('Proportion')
+% title('CCC Population Data, log')
+% 
+% box off
+% tickpref
+
+
+
+% % Pairwise Plots
+% figure;
+% subplot(2,1,1)
+% plot(BF1,BF2,'ko', 'markerfacecolor', 'k', 'markersize', 2);
+% r = corrcoef(BF1,BF2);
+% title(sprintf('BF1 vs BF2, r = %.2f' ,r(2)))
+% box off
+% tickpref;
+% minmin = min([min(BF1) min(BF2)]);
+% maxmax = max([max(BF1) max(BF2)]);
+% xlim([minmin maxmax]);
+% ylim([minmin maxmax]);
+% xlabel('Best Frequency (Hz) Neuron 1');
+% ylabel('Best Frequency (Hz) Neuron 2');
+% box off
+% tickpref
+% 
+% subplot(2,1,2)
+% loglog(BF1,BF2,'ko', 'markerfacecolor', 'k', 'markersize', 2);
+% box off
+% tickpref;
+% xlim([minmin maxmax]);
+% ylim([minmin maxmax]);
+% xlabel('Best Frequency (Hz) Neuron 1');
+% ylabel('Best Frequency (Hz) Neuron 2');
+% 
+% 
+% 
+% figure;
+% subplot(2,1,1)
+% plot(Q1,Q2,'ko', 'markerfacecolor', 'k', 'markersize', 2);
+% r = corrcoef(Q1,Q2);
+% title(sprintf('Q1 vs Q2, r = %.2f',r(2)))
+% minmin = min([min(Q1) min(Q2)]);
+% maxmax = max([max(Q1) max(Q2)]);
+% xlim([minmin maxmax]);
+% ylim([minmin maxmax]);
+% xlabel('Spectral Tuning (Q) Neuron 1');
+% ylabel('Spectral Tuning (Q) Neuron 2');
+% box off
+% tickpref
+% 
+% subplot(2,1,2)
+% loglog(Q1,Q2,'ko', 'markerfacecolor', 'k', 'markersize', 2);
+% box off
+% tickpref
+% xlim([minmin maxmax]);
+% xlim([0.125 maxmax]);
+% ylim([minmin maxmax]);
+% ylim([0.125 maxmax]);
+% xtick = [0.125 0.25 0.5 1 2 4];
+% set(gca,'xtick', xtick, 'xticklabel', xtick);
+% set(gca,'ytick', xtick, 'yticklabel', xtick);
+% xlabel('Spectral Tuning (Q) Neuron 1');
+% ylabel('Spectral Tuning (Q) Neuron 2');
+% 
+% close all;
+% 
+% figure;
+% subplot(2,1,1)
+% plot(L1,L2,'ko', 'markerfacecolor', 'k', 'markersize', 2);
+% r = corrcoef(L1,L2);
+% title(sprintf('L1 vs L2, r = %.2f',r(2)))
+% minmin = min([min(L1) min(L2)]) - 0.5;
+% maxmax = max([max(L1) max(L2)]) + 0.5;
+% xlim([minmin maxmax]);
+% ylim([minmin maxmax]);
+% xlabel('Latency (ms) Neuron 1');
+% ylabel('Latency (ms) Neuron 2');
+% box off
+% tickpref
+% 
+% subplot(2,1,2)
+% loglog(L1,L2,'ko', 'markerfacecolor', 'k', 'markersize', 2);
+% box off
+% tickpref
+% xlim([minmin maxmax]);
+% ylim([minmin maxmax]);
+% xlabel('Latency (ms) Neuron 1');
+% ylabel('Latency (ms) Neuron 2');
+% 
+% close all;
+% 
+% figure;
+% subplot(2,1,1)
+% plot(BW1,BW2,'ko', 'markerfacecolor', 'k', 'markersize', 2);
+% r = corrcoef(BW1,BW2);
+% title(sprintf('BW1 vs BW2, r = %.2f',r(2)))
+% box off
+% tickpref
+% minmin = min([min(BW1) min(BW2)])
+% maxmax = max([max(BW1) max(BW2)])
+% xlim([minmin maxmax]);
+% ylim([minmin maxmax]);
+% xlabel('Bandwidth (Hz) Neuron 1');
+% ylabel('Bandwidth (Hz) Neuron 2');
+% 
+% subplot(2,1,2)
+% loglog(BW1,BW2,'ko', 'markerfacecolor', 'k', 'markersize', 2);
+% box off
+% tickpref
+% xlim([minmin maxmax]);
+% ylim([minmin maxmax]);
+% xlabel('Bandwidth (Hz) Neuron 1');
+% ylabel('Bandwidth (Hz) Neuron 2');
+
+
+
+
+
+
+
+
+
+close all;
+
+% Pairwise Plots
+figure;
+
+subplot(4,1,1)
+loglog(BF1,BF2,'ko', 'markerfacecolor', 'k', 'markersize', 2);
+r = corrcoef(BF1,BF2);
+title(sprintf('BF1 vs BF2, r = %.2f' ,r(2)))
+box off
+tickpref;
+minmin = min([min(BF1) min(BF2)]);
+maxmax = max([max(BF1) max(BF2)]);
+xlim([minmin maxmax]);
+ylim([minmin maxmax]);
+xlabel('Best Frequency (Hz) Neuron 1');
+ylabel('Best Frequency (Hz) Neuron 2');
+
+subplot(4,1,2)
+loglog(Q1,Q2,'ko', 'markerfacecolor', 'k', 'markersize', 2);
+r = corrcoef(Q1,Q2);
+title(sprintf('Q1 vs Q2, r = %.2f',r(2)))
+minmin = min([min(Q1) min(Q2)]);
+maxmax = max([max(Q1) max(Q2)]);
+xlim([minmin maxmax]);
+xlim([0.125 maxmax]);
+ylim([minmin maxmax]);
+ylim([0.125 maxmax]);
+xtick = [0.125 0.25 0.5 1 2 4];
+set(gca,'xtick', xtick, 'xticklabel', xtick);
+set(gca,'ytick', xtick, 'yticklabel', xtick);
+xlabel('Spectral Tuning (Q) Neuron 1');
+ylabel('Spectral Tuning (Q) Neuron 2');
+box off
+tickpref
+
+subplot(4,1,3)
+plot(L1,L2,'ko', 'markerfacecolor', 'k', 'markersize', 2);
+r = corrcoef(L1,L2);
+title(sprintf('L1 vs L2, r = %.2f',r(2)))
+minmin = min([min(L1) min(L2)]) - 0.5;
+maxmax = max([max(L1) max(L2)]) + 0.5;
+xlim([minmin maxmax]);
+ylim([minmin maxmax]);
+xlabel('Latency (ms) Neuron 1');
+ylabel('Latency (ms) Neuron 2');
+box off
+tickpref
+
+subplot(4,1,4)
+loglog(BW1,BW2,'ko', 'markerfacecolor', 'k', 'markersize', 2);
+r = corrcoef(BW1,BW2);
+title(sprintf('BW1 vs BW2, r = %.2f',r(2)))
+box off
+tickpref
+minmin = min([min(BW1) min(BW2)]);
+maxmax = max([max(BW1) max(BW2)]);
+xlim([minmin maxmax]);
+ylim([minmin maxmax]);
+xlabel('Bandwidth (Hz) Neuron 1');
+ylabel('Bandwidth (Hz) Neuron 2');
+
+print_mfilename(mfilename);
+
+
+
+
+close all;
+
+
+% [deltaBF(:) delay(:) width(:) ccc(:)]
+
+index = ~isnan(width); % Only process if we could calculate Half-width
+
+% Parameter Comparisons
+figure;
+subplot(3,3,1)
+plot(deltaBF(index), delay(index),'ko', 'markerfacecolor', 'k', 'markersize', 2);
+title(sprintf('Delta BF vs Peak Delay; n = %.0f', length(delay(index))));
+xlabel('DBF (oct)');
+ylabel('Peak Delay (ms)');
+ylim([0 20]);
+tickpref;
+box off;
+
+subplot(3,3,4)
+plot(deltaBF(index),width(index),'ko', 'markerfacecolor', 'k', 'markersize', 2);
+title('Delta BF vs Half Width')
+xlabel('DBF (oct)');
+ylabel('Half Width (ms)');
+ylim([0 6]);
+tickpref;
+box off;
+
+subplot(3,3,7)
+plot(deltaBF(index),ccc(index),'ko', 'markerfacecolor', 'k', 'markersize', 2);
+set(gca,'yscale', 'log');
+% set(gca,'xscale', 'log');
+title('Delta BF vs CCC')
+xlabel('DBF (oct)');
+ylabel('CCC');
+ylim([0.0001 1]);
+box off
+tickpref
+
+
+subplot(3,3,2)
+plot(deltaQ(index), delay(index),'ko', 'markerfacecolor', 'k', 'markersize', 2);
+title(sprintf('Delta Q vs Peak Delay; n = %.0f', length(delay(index))));
+xlabel('DQ (oct)');
+ylabel('Peak Delay (ms)');
+ylim([0 20]);
+tickpref;
+box off;
+
+subplot(3,3,5)
+plot(deltaQ(index),width(index),'ko', 'markerfacecolor', 'k', 'markersize', 2);
+title('Delta Q vs Half Width')
+xlabel('DQ (oct)');
+ylabel('Half Width (ms)');
+ylim([0 6]);
+tickpref;
+box off;
+
+subplot(3,3,8)
+plot(deltaQ(index),ccc(index),'ko', 'markerfacecolor', 'k', 'markersize', 2);
+set(gca,'yscale', 'log');
+% set(gca,'xscale', 'log');
+title('Delta Q vs CCC')
+xlabel('DQ (oct)');
+ylabel('CCC');
+ylim([0.0001 1]);
+box off
+tickpref
+
+
+
+subplot(3,3,3)
+plot(deltaL(index), delay(index),'ko', 'markerfacecolor', 'k', 'markersize', 2);
+title(sprintf('Delta L vs Peak Delay; n = %.0f', length(delay(index))));
+xlabel('DL (ms)');
+ylabel('Peak Delay (ms)');
+ylim([0 20]);
+tickpref;
+box off;
+
+subplot(3,3,6)
+plot(deltaL(index),width(index),'ko', 'markerfacecolor', 'k', 'markersize', 2);
+title('Delta L vs Half Width')
+xlabel('DL (ms)');
+ylabel('Half Width (ms)');
+ylim([0 6]);
+tickpref;
+box off;
+
+subplot(3,3,9)
+plot(deltaL(index),ccc(index),'ko', 'markerfacecolor', 'k', 'markersize', 2);
+set(gca,'yscale', 'log');
+% set(gca,'xscale', 'log');
+title('Delta L vs CCC')
+xlabel('DL (ms)');
+ylabel('CCC');
+ylim([0.0001 1]);
+box off
+tickpref
+print_mfilename(mfilename);
+
+return;
+
+
+
+figure;
+subplot(3,1,1)
+plot(deltaL,delay,'ko')
+title('Delta Latency vs Peak Delay')
+
+subplot(3,1,2)
+plot(deltaL,width,'bo')
+title('Delta Latency vs Half Width')
+subplot(3,1,3)
+plot(deltaL,ccc,'go')
+title('Delta Latency vs CCC')
+box off
+tickpref
+
+
+return;
+
+
+
+figure;
+subplot(3,1,1)
+plot(deltaBW,delay,'ko')
+title('Delta Bandwidth vs Peak Delay')
+subplot(3,1,2)
+plot(deltaBW,width,'bo')
+title('Delta Bandwidth vs Half Width')
+subplot(3,1,3)
+plot(deltaBW,ccc,'go')
+title('Delta Bandwidth vs CCC')
+box off
+tickpref
