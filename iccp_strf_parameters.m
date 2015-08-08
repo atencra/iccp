@@ -1,15 +1,14 @@
-function params = vs_strf_parameters(strf, trigger)
-%strf_parameters - get strf parameters from significant portions
-%   of the strf and the rtf (ripple transfer function.
+function params = iccp_strf_parameters(strf, trigger)
+%iccp_strf_parameters - STRF parameters from significant strf
 %
-% Calculates temporal, spectral modulation transfer
-% functions as well as the separability index for
-% all strfs.
+% Calculates temporal, spectral modulation transfer functions as well 
+% as the separability index for all strfs.
 %
-% params = strf_parameters(strf, trigger)
+% params = iccp_strf_parameters(strf, trigger)
 %
-% You can use the function plot_strf_parameters.m to
-% view the results of the analysis. 
+% strf : struct array of spectrotemporal receptive fields
+%
+% trigger : ripple stimulus triggers, in sample number.
 %
 % The output 'params' is a struct array having length = length(strf)
 %
@@ -40,24 +39,6 @@ function params = vs_strf_parameters(strf, trigger)
 %    params.sci -> spectral correlation index
 %    params.pli -> phase-locking index
 % 
-%   caa 10/20/02
-
-
-% parameters to obtain:
-% separability index, i.e. the singular and eigen- values
-% temporal correlation index
-% spectral correlation index
-% asymmetry index
-% phase-locking index
-% best tm
-% best sm
-% mtfs: tm and sm
-% strf energy - use function strf_energy.m
-% firing rate
-% number of spikes
-% duration
-% 
-% and later, feature selectivity index
 
 
 params = struct(...
@@ -111,11 +92,7 @@ strf(i).model
     
     % Get the significant strf
     [rfsig] = significant_strf(strf(i).rfcontra, p, n0, mdb, dur);
-
-% figure;
-% imagesc(rfsig);
-% pause
-    
+   
     % take the singular value decomposition to decompose
     % the strf into separable subunits
     [u,s,v] = svd(rfsig);
@@ -149,15 +126,6 @@ strf(i).model
             rftemp = rftemp + singvals(k) * u(:,k) * v(:,k)';
         end % (for k)
 
-% j
-% clf;
-% subplot(2,1,1);
-% imagesc(rfsig);
-% subplot(2,1,2);
-% imagesc(rftemp);
-% pause
-
-        
         % Get STRF energy
         [energy(j)] = strf_energy(rftemp, mdb, stim);
         

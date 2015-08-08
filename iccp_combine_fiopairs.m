@@ -1,26 +1,11 @@
 function fiopairs_total = iccp_combine_fiopairs
-% iccp_combine_fiopairs Correlation between pairs
+% iccp_combine_fiopairs Gather FIO nonlinearity data into one struct array
 %
-% iccp_combine_fiopairs(override)
+% fiopairs_total = iccp_combine_fiopairs;
 % -----------------------------------------------------------
 %
-
-%
-% If the elements match, the cross-correlation between the spike trains for
-% each pair are estimated, and the results are saved in a struct array that
-% contains all the data in the individual files as well as the new
-% cross-correlation data.
-%
-% The new struct array is then saved in a file with the ending: 
-% *-strfcmb-pairs-ccpairs.mat
-%
-% If the override input argument is not supplied, then the function first
-% checks to make sure that there is not already an output *-ccpairs.mat
-% file. If there is, then the function skips processing the data for that
-% set of files. If override = 1, then the function runs and writes over any
-% *-ccpairs.mat file that is present.
-%
-% caa 8/15/14
+% Simple function to gather all the *-strfcmb-pairs-fiopair.mat data in the
+% current directory and append it to a larger struct array database.
 
 
 narginchk(0,0);

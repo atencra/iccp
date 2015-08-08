@@ -1,11 +1,12 @@
 function [pairstrains] = iccp_get_spk_paired_data(spk)
-% iccp_get_icc_fra_spk_paired_data Pairs from channels of spk
+% iccp_get_spk_paired_data Pairs of spike trains from channels of spk
 % 
-%     [pairstrains] = iccp_get_icc_fra_spk_paired_data(spk);
+%     [pairstrains] = iccp_get_spk_paired_data(spk);
 % 
 % 
-%     Reads '*-tc1-fs*-spk-orig-isi-fixed.mat' files from the 
-%     current directory. Each file holds spk, trigger, and fra data.
+%     Goes through spk and for each recording where there are two neurons,
+%     we form a new struct that holds the spike trains for the pair of
+%     neurons. 
 % 
 %     spk is a struct array with the same number of elements. spk
 %     holds the spike times.
@@ -15,7 +16,7 @@ function [pairstrains] = iccp_get_spk_paired_data(spk)
 %     saved in the struct array pairstrains.
 % 
 %
-%     [pairstrains] = iccp_get_icc_fra_spk_paired_data(spk);
+%     [pairstrains] = iccp_get_spk_paired_data(spk);
 
 
 pairstrains = [];

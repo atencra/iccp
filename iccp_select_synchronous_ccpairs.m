@@ -1,25 +1,19 @@
-function index = iccpairs_select_synchronous_ccpairs(ccpairs)
-%pairs_select_synchronous_ccpairs Identify sharply synchronous neuron pairs
+function index = iccp_select_synchronous_ccpairs(ccpairs)
+%iccp_select_synchronous_ccpairs Identify sharply synchronous neuron pairs
 %
-%   index = pairs_select_synchronous_ccpairs(ccpairs)
+%   index = iccp_select_synchronous_ccpairs(ccpairs)
 %
 %   ccpairs : database of neurons recorded from the same channel. ccpairs
 %   is a struct array, with each element holding data for one pair. The
 %   fields of ccpairs hold receptive field parameters cross-covariance data
 %   for each pair.
 %
-%   strf : optional argument. It is the strf struct array for the 
-%   individual neurons in ccpairs. If strf is provided, then the
-%   strfs will be shown for the two constituent neurons in the
-%   ccpairs element. 
-%
-%   trigger : vector of trigger times that is to accompany STRF.
-%
 %   index : indicates elements of ccpairs that the user has identified as
 %   a synchronous spiking pair.
 % 
-%   index = pairs_select_synchronous_ccpairs(ccpairs)
+%   index = iccp_select_synchronous_ccpairs(ccpairs)
 
+library('agmon');
 
 if ( nargin ~= 1 && nargin ~= 3 )
     error('Wrong input arguments.');

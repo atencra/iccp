@@ -1,23 +1,24 @@
 function iccp_fix_info_spk_isi
 % iccp_fix_info_spk_isi Modify spike train files so no ISIs < 0.75 ms
 % 
-%     iccpairs_fix_info_spk_isi
+%     iccpairs_fix_info_spk_isi.m
 % 
 %     Fixes spike train data saved in spk struct array data. Spike trains
 %     are examined, and if two spikes are separated by less than 0.5 ms, 
 %     the second spike is removed from the spike train.
 % 
-%     The function looks for *-strfcmb-pairs.mat files in the current
+%     The function looks for *-dmrrep-resp.mat files in the current
 %     directory and fixes the data inside them. 
 % 
 %     New data files will be saved in the form 
 % 
-%         *-strfcmb-pairs-isi-fixed.mat
+%         *-dmrrep-resp-isi-fixed.mat
 % 
 %     where the ending -isi-fixed.mat has been appended to the 
 %     old file name.
 % 
-%     iccp_fix_strf_spk_isi;
+%     iccp_fix_info_spk_isi;
+
 
 library('spikesort');
 

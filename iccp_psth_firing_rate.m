@@ -1,25 +1,24 @@
-function [p, rt, edges] = vs_psth_firing_rate(trialspikes,dt,T)
+function [p, rt, edges] = iccp_psth_firing_rate(trialspikes,dt,T)
+% iccp_psth_firing_rate PSTH, firing rate from spike times
+% 
+%     [p, rt, edges] = iccp_psth_firing_rate(trialspikes,dt,T)
+% 
+%     trialspikes : cell array of spike times. length(trialspikes) = # stimulus
+%     repetitions.
+% 
+%     dt : bin size of PSTH, in seconds.
+%     T : duration of PSTH, in seconds.
+%     p : PSTH
+% 
+%     rt : time varying firing rate
+%     edges : PSTH bin edges
+% 
+%     Output values are used as inputs to information calculations.
 
-% plot_psth Generates raster plot, PSTH, and stimulus spectrogram for a
-% given response file and dt value
 
-% [p, rt] = plot_psth(resp,dt)
-
-% Inputs:
-% ------------------------------
-% 1) trialspikes: cell array. Each element contains the responses to one
-%    presentation of a stimulus segment. The length of trialspikes is the
-%    number of repetitions of the segment
-% 2) dt: time bin size used to calculate the psth, in seconds.
-% 3) T : total duration of the stimulus segment, in seconds. Default = 12.
-%
-% Outputs:
-% ------------------------------
-% 1) p: psth binned at resolution dt
-% 2) rt: firing rate from p, in spikes/s
 
 if ( nargin == 2 )
-   T = 12;
+   T = 12; % duration of ICC repeated stimulus
 end
 
 edges = 0:dt:T;

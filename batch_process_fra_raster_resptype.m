@@ -1,15 +1,14 @@
 function batch_process_fra_raster_resptype
-% batch_process_fra_raster_resptype Calculate FRAs response type, phasic/sustained continuum
+% batch_process_fra_raster_resptype Temporal response type for FRAs
 % 
-%    batch_process_acute_rat_tm(stimfolder, stimuli) goes through all the directories
-%    in an experimental folder and processes the data. This function should be
-%    run inside a folder that contains individual folders for each penetration.
-%    Inside the penetration folders are *-thresh.mat and *-trig.mat files, which
-%    will be used to process the data.
-% 
-%    Craig Atencio 
-%    8/13/14
-
+%    batch_process_fra_raster_resptype searches through the current
+%    directory for *-fracmb-pairs.mat files. For each file, the fra
+%    variable is processed, and the response type is calculated. The
+%    response type is estimated from the PSTH and raster, and provides a
+%    measure of how phasic or tonic the response is.
+%
+%    Thus, this function is a wrapper to the function that does the
+%    calculations, fra_raster_response_type.m
 
 respfiles = dir( sprintf('*-fracmb-pairs.mat') );
 
@@ -17,8 +16,10 @@ for i = 1:length(respfiles)
 
    infile = respfiles(i).name;
    fprintf('Processing %s\n', infile);
+
    index = findstr(infile, '.mat');
    base_name = infile(1:index-1); % for later output file names
+
    outfile = sprintf('%s-resptype.mat', base_name); % output file name
    doutfile = dir(outfile); % see if it already exists
 

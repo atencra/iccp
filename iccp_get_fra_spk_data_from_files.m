@@ -1,7 +1,7 @@
-function [pairstrains] = iccp_get_icc_fra_spk_data_from_files
-% iccp_get_icc_fra_spk_data_from_files Pairs from channels of spk and fra data
+function [pairstrains] = iccp_get_fra_spk_data_from_files
+% iccp_get_fra_spk_data_from_files Pairs from channels of spk and fra data
 % 
-%     [pairstrains] = iccp_get_icc_fra_spk_data_from_files;
+%     [pairstrains] = iccp_get_fra_spk_data_from_files;
 % 
 %     Reads '*-tc1-fs*-spk-orig-isi-fixed.mat' files from the 
 %     current directory. Each file holds spk, trigger, and fra data.
@@ -15,7 +15,7 @@ function [pairstrains] = iccp_get_icc_fra_spk_data_from_files
 %     saved in the struct array pairstrains.
 % 
 %
-%     [pairstrains] = iccp_get_icc_fra_spk_data_from_files
+%     [pairstrains] = iccp_get_fra_spk_data_from_files
 
 
 
