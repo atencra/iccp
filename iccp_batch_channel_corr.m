@@ -30,7 +30,7 @@ function iccp_batch_channel_corr
 %             '*-strfcmb-pairs-isi-fixed-ccpairs.mat'
 % 
 % 
-%     iccpairs_calc_isi_fixed_crosscorr;
+%     iccp_batch_channel_corr;
 
 narginchk(0,0);
 
@@ -52,7 +52,7 @@ for i = 1:length(d)
 
         if ( length(str.spk) > 1 )
 
-            [pairstrains] = iccp_get_paired_spk_data(str.spk);
+            [pairstrains] = iccp_spk_paired_spiketrains(str.spk);
             [ccpairs] = iccp_calc_spk_crosscorr(pairstrains);
 
             save(outfile, 'ccpairs');

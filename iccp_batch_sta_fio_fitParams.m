@@ -1,17 +1,24 @@
 function iccp_batch_sta_fio_fitParams
-% iccp_batch_sta_fio_fitParams Nonlinearity curve fits to directory data
+% iccp_batch_sta_fio_fitParams Fit theoretical curve to nonlinearities in directory
 %
-% Finds all the *-sta-fio.mat files in the current directory, loads the
-% nonlinearities contained in the file, then fits a parametric curve to
-% each nonlinearity. The fit and parameters are then saved in
+% Gets all *-sta-fio.mat files in the current directory, calls 
+% get_icc_fio_curve_fit_params on the fio data to obtain curve fit parameters.
 %
-% *-sta-fio-fitparams.mat files.
+% The curve fit has two parameters, a threshold and a transition variable.
+% These paremeters describe the threshold to spiking for the neuron and
+% then transition noise of the spike generating mechanism. If the neuron is
+% a hard rectifier, then noise ~ 0, while values > 0 indicate less fidelity
+% in coding auditory stimuli.
 %
-% The theoretical curve is discussed in detail in Ringach and Malone
-% (2009).
+% Nomenclature: sta : spike triggered average
+%               fio : function input/output - the nonlinearity
+%               fitParams : parameters for curve fit
+%
+% Curve fit data are saved in files ending in *-sta_fio_fitparams.mat
 
 
-d = dir('*-sta-fio.mat');
+
+d = dir('*-sta-fio.mat')
     
 for n = 1:length(d)
     filename = d(n).name;
@@ -21,15 +28,12 @@ for n = 1:length(d)
     prefix = filename(1:index-1);
     newfile = sprintf('%s-sta-fio-fitparams.mat', prefix);
 
-    fioFit = iccp_fio_curve_fit_params(fio);
+    fioFit = get_icc_fio_curve_fit_params(fio);
+    
     save(newfile,'fioFit');
+       
 end
 
 
 
-return;
-
-
-
-
-
+end

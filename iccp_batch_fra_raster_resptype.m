@@ -1,7 +1,7 @@
-function batch_process_fra_raster_resptype
-% batch_process_fra_raster_resptype Temporal response type for FRAs
+function iccp_batch_fra_raster_resptype
+% iccp_batch_fra_raster_resptype Temporal response type for FRAs in directory
 % 
-%    batch_process_fra_raster_resptype searches through the current
+%    iccp_batch_fra_raster_resptype searches through the current
 %    directory for *-fracmb-pairs.mat files. For each file, the fra
 %    variable is processed, and the response type is calculated. The
 %    response type is estimated from the PSTH and raster, and provides a
@@ -9,6 +9,8 @@ function batch_process_fra_raster_resptype
 %
 %    Thus, this function is a wrapper to the function that does the
 %    calculations, fra_raster_response_type.m
+
+library('frabox');
 
 respfiles = dir( sprintf('*-fracmb-pairs.mat') );
 

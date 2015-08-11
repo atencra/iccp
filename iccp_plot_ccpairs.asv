@@ -1,24 +1,17 @@
-function cc_plot_ccpairs(ccpairs)
-% iccpairs_calc_spk_crosscorr Cross-cov/corr from spk data
+function iccp_plot_ccpairs(ccpairs)
+% iccp_plot_ccpairs Show functional connectivity metrics
 % 
-%     [ccpairs] = iccpairs_calc_spk_crosscorr(pairstrains);
-% 
-%     For the pairs of spike train data in pairstrains, estimate the 
-%     correlation function for each spike train.
-% 
-%     The data for each in pairstrains is returned in the struct array
-%     ccpairs.
-% 
-%     [ccpairs] = iccpairs_calc_spk_crosscorr(pairstrains);
+%     iccp_plot_ccpairs(ccpairs) plots the correlogram, cross-covariance
+%     function, and normalized binless correlogram for the struct array
+%     ccpairs. Each element of ccpairs contains data for one pair of
+%     neurons.
 
-library('spike_train_cross_correlation');
-library('agmon');
 
 close all;
 
 for i = 1:length(ccpairs)
 
-    fprintf('Processing #%.0f of %.0f\n', i, length(ccpairs) );
+    fprintf('Plotting #%.0f of %.0f\n', i, length(ccpairs) );
 
     fsd = ccpairs(i).fsd;
     dt = ccpairs(i).dt;
@@ -42,12 +35,13 @@ for i = 1:length(ccpairs)
 
 
     % plot correlation functions as we go
-    clf;
+    figure;
     subplot(3,1,1);
     bar(delay, r12, 'k'); %, 'markerfacecolor', 'k', 'markersize', 2);
     tickpref;
     box off;
     ylabel('Correlogram');
+    title(sprintf('%s site%.0f chan%.0f model %.0f/%.0f
 
 
     % binless correlogram
@@ -87,7 +81,7 @@ for i = 1:length(ccpairs)
 
     set(gcf,'position', [569 94 560 892]);
 
-    pause;
+    pause(1);
 
 end % (for i)
 
