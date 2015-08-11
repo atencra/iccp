@@ -43,7 +43,7 @@ for i = 1:length(d)
         strf = s.strf;
         trigger = s.trigger;
 
-        spknew = isi_filtered_spk(spk, delay);
+        spknew = iccp_isi_filtered_spk(spk, delay);
         spk = spknew;
 
         save(outfile, 'strf', 'spk', 'trigger');
@@ -55,6 +55,9 @@ for i = 1:length(d)
     end
 
 end %(for i)
+
+return;
+
 
 
 
