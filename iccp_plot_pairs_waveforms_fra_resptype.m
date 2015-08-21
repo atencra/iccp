@@ -1,4 +1,4 @@
-function vs_plot_pairs_waveforms_fra_resptype(spk, fra, params, rt)
+function iccp_plot_pairs_waveforms_fra_resptype(spk, fra, params, rt)
 % vs_plot_pairs_fra_pairs_resptype :
 % --------------------------------------------------------
 % Reads through files in a directory to find struct arrays
@@ -48,10 +48,12 @@ for i = 1:length(chan_unique)
 end
 
 close all;
+
 %2003-11-24 site9: 17, 19, 20, 26, 38, 31, 37, 
 %2003-11-24 site10: 32, 34,
 %2003-11-24 site11: 3, 7, 9, 13, 22, 
 %2003-11-24 site14: 1, 5, 20, 42,
+
 for i = 42:42 %1:size(cmb_total,1)
 
    figure;

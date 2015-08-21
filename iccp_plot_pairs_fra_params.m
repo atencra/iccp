@@ -1,26 +1,33 @@
-function [fr, cf, bw, bwlog, Q, latency] = vs_plot_pairs_fra_params(fr, cf, bw, bwlog, Q, latency)
-% plot_pairs_fra_params :
-% --------------------------------------------------------
-% Reads through files in a directory to find struct arrays
-% holding the pairs data. The files have names in the following
-% form:
-%        *-fra-params.mat
-%
-% params : struct array holding fra parameters, such
-% as characteristic frequency, bandwidth, latency and firing rate.
-%
-% The function finds the neurons that were recorded from the 
-% same channel, and then compares the parameters
-% for these neurons.
-%
-% The analysis tells us the variability of the parameters in
-% a locally confined area of the cortex.
-%
-% caa 6/29/12
+function [fr, cf, bw, bwlog, Q, latency] = iccp_plot_pairs_fra_params(fr, cf, bw, bwlog, Q, latency)
+% iccp_plot_pairs_fra_params Pairwise/difference plots for FRA parameters
 % 
+%     iccp_plot_pairs_fra_params; looks for '*-fracmb-pairs-params.mat' in
+%     the current directory, extracts the data, and compares FRA values for 
+%     pairs of neurons. Scatter plots for the values, and difference histograms 
+%     for each pair, are shown. The parameters that are plotted are firing rate,
+%     CF, BW, log BW, Q, and latency.
+% 
+%     [fr, cf, bw, bwlog, Q, latency] = iccp_plot_pairs_fra_params; returns the
+%     data used to make the plots.
+% 
+% 
+%     iccp_plot_pairs_fra_params(fr, cf, bw, bwlog, Q, latency); uses the 
+%     previously returned data to quickly make the plots. This is helpful
+%     because it doesn't read through all the files in the directory.
+%
+%     You can indicate specific plots by using the following:
+%
+%     iccp_plot_pairs_fra_params(str); where str is a string specifying
+%     the type of plot. str may be 'fr', 'cf', 'bw', 'q', or 'latency'.
+%     Data is read from the files in this form.
+%
+%     iccp_plot_pairs_fra_params(str, data); make a plot without searching
+%     through the files. The str takes on values as before, and data is an
+%     Nx2 array that corresponds to str.
 
 
-nargchk(0,6,nargin);
+
+narginchk(0,6);
 
 if ( nargin == 0 )
    [position, fr, cf, bw, bwlog, Q, latency] = get_pairs_fra_params;
@@ -38,7 +45,7 @@ close all;
 % vs_plot_pairs_fra_bw_diff_rand(bw);
 
 
-vs_plot_pairs_fra_q_scatter_hist(Q);
+% vs_plot_pairs_fra_q_scatter_hist(Q);
 
 % vs_plot_pairs_fra_q_diff_rand(Q)
 
@@ -233,8 +240,8 @@ subplot(1,2,1);
 hold on
 axis([0.2 32 0.2 32])
 plot(xlim, ylim, 'k-');
-[larger, smaller] = vs_largersmaller(cf(:,1), cf(:,2));
-scatter(larger,smaller,20, 'MarkerEdgeColor', 'black', 'MarkerFaceColor', [0.6 0.6 0.6])
+[larger, smaller] = iccp_largersmaller(cf(:,1), cf(:,2));
+scatter(larger,smaller,10, 'MarkerEdgeColor', 'black', 'MarkerFaceColor', [0.6 0.6 0.6])
 tickpref
 box off
 xlabel('CF (kHz) Neuron 1')
@@ -272,8 +279,6 @@ fprintf('MN = %.4f, SD = %.4f, SE = %.4f, MD = %.4f, MAD = %.4f, n = %.0f\n',...
    dstats.mn, dstats.sd, dstats.se, dstats.md, dstats.mad, length(cf(:,1)) );
 
 return;
-
-
 
 
 
@@ -358,8 +363,6 @@ print_mfilename(mfilename);
 
 
 return;
-
-
 
 
 
@@ -476,14 +479,6 @@ return;
 
 
 
-
-
-
-
-
-
-
-
 function vs_plot_pairs_fra_q_scatter_hist(Q)
 
 
@@ -578,7 +573,6 @@ set(gcf,'Position',[400 100 321 551])
 print_mfilename(mfilename);
 
 return;
-
 
 
 
@@ -695,10 +689,6 @@ set(gcf,'Position',[400 100 321 551])
 print_mfilename(mfilename);
 
 return;
-
-
-
-
 
 
 
@@ -1487,25 +1477,6 @@ print_mfilename(mfilename);
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 % Latency 
 
 lat_diff = abs(latency(:,2) - latency(:,1));
@@ -1600,8 +1571,6 @@ set(gcf,'Position',[177   485   321   404]);
 print_mfilename(mfilename);
 
 return
-
-
 
 
 

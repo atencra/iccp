@@ -1,4 +1,4 @@
-function iccpairs_plot_fradata_cf_resptype(fradata)
+function iccp_plot_fradata_cf_resptype(fradata)
 % iccpairs_plot_fradata_cf_resptype ICC Pairwise CF, resptype comparison
 % 
 %     iccpairs_plot_fradata_cf_resptype(fradata)

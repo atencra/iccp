@@ -1,8 +1,8 @@
-function [nb_nb_ne, ne_nb_ne] = vs_plot_pairs_fra_resptype(nb_nb_ne, ne_nb_ne)
-% vs_plot_pairs_fra_resptype Compare response types of ICC pairs
+function [nb_nb_ne, ne_nb_ne] = iccp_plot_pairs_fra_resptype(nb_nb_ne, ne_nb_ne)
+% iccp_plot_pairs_fra_resptype Compare response types of ICC pairs
 %
-% [nb_nb_ne, ne_nb_ne] = vs_plot_pairs_fra_resptype(nb_nb_ne, ne_nb_ne)
-% ------------0--------------------------------------------------------
+% [nb_nb_ne, ne_nb_ne] = iccp_plot_pairs_fra_resptype(nb_nb_ne, ne_nb_ne)
+% ---------------------------------------------------------------------
 % Reads through files in a directory to find struct arrays
 % holding the response type data. The files have names in the following
 % form:
@@ -12,6 +12,17 @@ function [nb_nb_ne, ne_nb_ne] = vs_plot_pairs_fra_resptype(nb_nb_ne, ne_nb_ne)
 % same channel, and then compares the response type parameters
 % for these neurons.
 %
+% Function calls:
+%
+% iccp_plot_pairs_fra_resptype : searches through files and plots the data
+% 
+% [nb_nb_ne, ne_nb_ne] = iccp_plot_pairs_fra_resptype : returns the data used
+% to make the plots.
+% 
+% iccp_plot_pairs_fra_resptype(nb_nb_ne, ne_nb_ne) : uses the previously 
+% returned data to make the plots. This speeds up the process considerably,
+% since there could be many files.
+
 
 if ( nargin == 0 )
    [position, nb_nb_ne, ne_nb_ne] = get_pairs_fra_resptype;
@@ -122,8 +133,8 @@ for i = 1:nrows
    xlim([minmin maxmax]);
    ylim([minmin maxmax]);
    plot(xlim, ylim, 'k-');
-   [larger, smaller] = vs_largersmaller(rtdata{i}(:,1),rtdata{i}(:,2));
-   scatter(larger,smaller,20,'MarkerEdgeColor', 'black', 'MarkerFaceColor', [0.6 0.6 0.6])
+   [larger, smaller] = iccp_largersmaller(rtdata{i}(:,1),rtdata{i}(:,2));
+   scatter(larger,smaller,10,'MarkerEdgeColor', 'black', 'MarkerFaceColor', [0.6 0.6 0.6])
    xlim([minmin maxmax])
    ylim([minmin maxmax])
    tickpref
