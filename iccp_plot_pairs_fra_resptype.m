@@ -24,15 +24,19 @@ function [nb_nb_ne, ne_nb_ne] = iccp_plot_pairs_fra_resptype(nb_nb_ne, ne_nb_ne)
 % since there could be many files.
 
 
+% Get data from files if no input arguments
 if ( nargin == 0 )
    [position, nb_nb_ne, ne_nb_ne] = get_pairs_fra_resptype;
 end
 
 close all;
 
-vs_plot_pairs_fra_resptype_scatter_hist(nb_nb_ne, ne_nb_ne);
+% Plot response type data - scatter and diff histograms
+iccp_plot_pairs_fra_resptype_scatter_hist(nb_nb_ne, ne_nb_ne);
 
-% vs_plot_pairs_fra_resptype_diff_rand(nb_nb_ne, ne_nb_ne);
+
+% Randomization test for response types
+iccp_plot_pairs_fra_resptype_diff_rand(nb_nb_ne, ne_nb_ne);
 
 return;
 
@@ -87,7 +91,7 @@ return;
 
 
 
-function vs_plot_pairs_fra_resptype_scatter_hist(nb_nb_ne, ne_nb_ne)
+function iccp_plot_pairs_fra_resptype_scatter_hist(nb_nb_ne, ne_nb_ne)
 
 rtdata{1} = nb_nb_ne;
 rtdata{2} = ne_nb_ne;
@@ -186,7 +190,7 @@ return;
 
 
 
-function vs_plot_pairs_fra_resptype_diff_rand(nb_nb_ne, ne_nb_ne)
+function iccp_plot_pairs_fra_resptype_diff_rand(nb_nb_ne, ne_nb_ne)
 
 rtdata{1} = nb_nb_ne;
 rtdata{2} = ne_nb_ne;
@@ -227,7 +231,7 @@ nrows = length(label);
 
 for i = 1:nrows
 
-   [larger, smaller] = vs_largersmaller(rtdata{i}(:,1),rtdata{i}(:,2));
+   [larger, smaller] = iccp_largersmaller(rtdata{i}(:,1),rtdata{i}(:,2));
 
    subplot(nrows,2,(i-1)*2+1);
    n = histc(rtdiff{i}, edges);
@@ -310,37 +314,6 @@ return;
 
 
 
-
-
-function [frequnique, ampunique, tc] = freq_resp_area_matrix(data, win)
-
-freq = data.freq;
-amp = data.amp;
-
-frequnique = unique(freq);
-ampunique = unique(amp);
-
-tc = zeros(length(ampunique), length(frequnique));
-
-for i = 1:length(freq)
-
-   resp = data.resp{i};
-   spetindex = find( resp>=win(1) & resp<=win(2) );
-
-   if ( ~isempty(spetindex) )
-
-      numspikes = length(spetindex);
-
-      inda = find( amp(i) == ampunique); 
-      indf = find( freq(i) == frequnique);
-
-      tc(inda, indf) = tc(inda, indf) + numspikes;
-
-   end
-
-end % (for i)
-
-return
 
 
 
