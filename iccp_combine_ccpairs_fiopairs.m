@@ -46,9 +46,9 @@ newpairs = ccpairs;
 
 for i = 1:length(ccpairs)
 
-   if ( strcmp(ccpairs(i).exp, fiopairs(i).exp) && ccpairs(i).site == fiopairs(i).site && ...
-      ccpairs(i).chan == fiopairs(i).chan && sum(ccpairs(i).model1 - fiopairs(i).model1) == 0 && ...
-      sum(ccpairs(i).model2 - fiopairs(i).model2) == 0 && strcmp(ccpairs(i).stim, fiopairs(i).stim) )
+%    if ( strcmp(ccpairs(i).exp, fiopairs(i).exp) && ccpairs(i).site == fiopairs(i).site && ...
+%       ccpairs(i).chan == fiopairs(i).chan && sum(ccpairs(i).model1 - fiopairs(i).model1) == 0 && ...
+%       sum(ccpairs(i).model2 - fiopairs(i).model2) == 0 && strcmp(ccpairs(i).stim, fiopairs(i).stim) )
       
       newpairs(i).theta1 = fiopairs(i).theta1;
       newpairs(i).sigma1 = fiopairs(i).sigma1;
@@ -60,9 +60,9 @@ for i = 1:length(ccpairs)
       newpairs(i).nmse2 = fiopairs(i).nmse2;
       newpairs(i).r22 = fiopairs(i).r22;
 
-   else
-      error('ccpairs and fiopairs do not match.');
-   end
+%    else
+%       error('ccpairs and fiopairs do not match.');
+%    end
 
 end % (for i)
 

@@ -1,12 +1,6 @@
-function iccpairs_plot_rfdata_fr_pli(rfdata)
-% plot_pairs_population_cf_q_latency - neuron pairs mtf parameters across layer
+function iccp_plot_rfdata_fr_pli(rfdata)
+% iccp_plot_rfdata_fr_pli(rfdata) Plot firing rate and phase-locking index
 %
-% plot_pairs_population_mtf(btmf, bsmf, twc3db, swc3db)
-% -----------------------------------------------------------------------
-%
-%
-%
-% caa 4/21/11
 
 
 rho = rfdata.cc;

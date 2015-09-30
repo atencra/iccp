@@ -1,8 +1,8 @@
-function [cf, bw, q, latency] = vs_plot_pairs_strf_cf_q_latency(cf, bw, q, latency)
-% plot_pairs_strf_cf_q_latency - compare pure tone params of pairs
+function [cf, bw, q, latency] = iccp_plot_pairs_strf_cf_q_latency(cf, bw, q, latency)
+% iccp_plot_pairs_strf_cf_q_latency - compare pure tone params for pairs of neurons
 %
 % 
-% plot_pairs_strf_cf_q_latency
+% iccp_plot_pairs_strf_cf_q_latency
 % --------------------------------------------------------
 % The function finds the neurons that were recorded from the 
 % same channel, and then compares the pure tone parameters
@@ -10,8 +10,6 @@ function [cf, bw, q, latency] = vs_plot_pairs_strf_cf_q_latency(cf, bw, q, laten
 %
 % The analysis tells us the variability of the parameters in
 % a locally confined area of cortex.
-%
-% caa 4/1/11
 %
 % plot_pairs_strf_cf_q_latency;
 

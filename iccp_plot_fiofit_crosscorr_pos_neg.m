@@ -1,4 +1,4 @@
-function iccpairs_plot_fiofit_crosscorr_pos_neg(ccpairs)
+function iccp_plot_fiofit_crosscorr_pos_neg(ccpairs)
 % nonlinearity_parameter_analysis: Looks at nonlinearity parameters from
 %                                  *-sta-fio-fitparams.mat files.
 
@@ -102,24 +102,24 @@ theta_pos = theta(index_pos_only,:);
 theta_neg = theta(index_neg_only,:);
 theta_pos_neg = theta(index_pos_neg,:);
 
-[theta_larger_pos, theta_smaller_pos] = vs_largersmaller(theta_pos(:,1),theta_pos(:,2));
+[theta_larger_pos, theta_smaller_pos] = iccp_largersmaller(theta_pos(:,1),theta_pos(:,2));
 theta_larger_pos = theta_larger_pos(nmse_pos);
 theta_smaller_pos = theta_smaller_pos(nmse_pos);
 thetadiff_pos = abs( theta_larger_pos - theta_smaller_pos );
 
-[theta_larger_neg, theta_smaller_neg] = vs_largersmaller(theta_neg(:,1),theta_neg(:,2));
+[theta_larger_neg, theta_smaller_neg] = iccp_largersmaller(theta_neg(:,1),theta_neg(:,2));
 theta_larger_neg = theta_larger_neg(nmse_neg);
 theta_smaller_neg = theta_smaller_neg(nmse_neg);
 thetadiff_neg = abs( theta_larger_neg - theta_smaller_neg );
 
-[theta_larger_pos_neg, theta_smaller_pos_neg] = vs_largersmaller(theta_pos_neg(:,1),theta_pos_neg(:,2));
+[theta_larger_pos_neg, theta_smaller_pos_neg] = iccp_largersmaller(theta_pos_neg(:,1),theta_pos_neg(:,2));
 theta_larger_pos_neg = theta_larger_pos_neg(nmse_pos_neg);
 theta_smaller_pos_neg = theta_smaller_pos_neg(nmse_pos_neg);
 thetadiff_pos_neg = abs( theta_larger_pos_neg - theta_smaller_pos_neg );
 
 fprintf('\n');
 label = 'FIO Theta';
-iccpairs_ccc_pos_neg_summary(thetadiff_pos, thetadiff_neg, thetadiff_pos_neg, label);
+iccp_ccc_pos_neg_summary(thetadiff_pos, thetadiff_neg, thetadiff_pos_neg, label);
 
 fprintf('\n');
 fprintf('Sig fit, Positive only peaks: %.0f\n', sum(nmse_pos) );
@@ -137,29 +137,29 @@ sigma_pos = sigma(index_pos_only,:);
 sigma_neg = sigma(index_neg_only,:);
 sigma_pos_neg = sigma(index_pos_neg,:);
 
-[sigma_larger_pos, sigma_smaller_pos] = vs_largersmaller(sigma_pos(:,1),sigma_pos(:,2));
+[sigma_larger_pos, sigma_smaller_pos] = iccp_largersmaller(sigma_pos(:,1),sigma_pos(:,2));
 sigma_larger_pos = sigma_larger_pos(nmse_pos);
 sigma_smaller_pos = sigma_smaller_pos(nmse_pos);
 sigmadiff_pos = abs( sigma_larger_pos - sigma_smaller_pos );
 
-[sigma_larger_neg, sigma_smaller_neg] = vs_largersmaller(sigma_neg(:,1),sigma_neg(:,2));
+[sigma_larger_neg, sigma_smaller_neg] = iccp_largersmaller(sigma_neg(:,1),sigma_neg(:,2));
 sigma_larger_neg = sigma_larger_neg(nmse_neg);
 sigma_smaller_neg = sigma_smaller_neg(nmse_neg);
 sigmadiff_neg = abs( sigma_larger_neg - sigma_smaller_neg );
 
-[sigma_larger_pos_neg, sigma_smaller_pos_neg] = vs_largersmaller(sigma_pos_neg(:,1),sigma_pos_neg(:,2));
+[sigma_larger_pos_neg, sigma_smaller_pos_neg] = iccp_largersmaller(sigma_pos_neg(:,1),sigma_pos_neg(:,2));
 sigma_larger_pos_neg = sigma_larger_pos_neg(nmse_pos_neg);
 sigma_smaller_pos_neg = sigma_smaller_pos_neg(nmse_pos_neg);
 sigmadiff_pos_neg = abs( sigma_larger_pos_neg - sigma_smaller_pos_neg );
 
 fprintf('\n');
 label = 'FIO Sigma';
-iccpairs_ccc_pos_neg_summary(sigmadiff_pos, sigmadiff_neg, sigmadiff_pos_neg, label);
+iccp_ccc_pos_neg_summary(sigmadiff_pos, sigmadiff_neg, sigmadiff_pos_neg, label);
 
 
 
 
-cmap = cschemes('blues', 4);
+cmap = brewmaps('blues', 4);
 cmap = cmap(1:3,:);
 markersize = 4;
 
@@ -173,15 +173,15 @@ xlim([min(xytick) max(xytick)]);
 ylim([min(xytick) max(xytick)]);
 plot(xlim, ylim, 'k-');
 
-plot(theta_larger_pos, theta_smaller_pos, 'o', 'color', cmap(1,:), ...
+plot(theta_larger_pos, theta_smaller_pos, 's', 'color', cmap(1,:), ...
    'markersize', markersize, 'markerfacecolor', cmap(1,:), ...
    'markeredgecolor', cmap(1,:));
 
-plot(theta_larger_neg, theta_smaller_neg, 'o', 'color', cmap(2,:), ...
-   'markersize', markersize, 'markerfacecolor', cmap(2,:), ...
-   'markeredgecolor', cmap(2,:));
+% plot(theta_larger_neg, theta_smaller_neg, 'o', 'color', cmap(2,:), ...
+%    'markersize', markersize, 'markerfacecolor', cmap(2,:), ...
+%    'markeredgecolor', cmap(2,:));
 
-plot(theta_larger_pos_neg, theta_smaller_pos_neg, 'o', 'color', cmap(3,:), ...
+plot(theta_larger_pos_neg, theta_smaller_pos_neg, 's', 'color', cmap(3,:), ...
    'markersize', markersize, 'markerfacecolor', cmap(3,:), ...
    'markeredgecolor', cmap(3,:));
 
@@ -199,17 +199,17 @@ hold on;
 edges = 0:0.5:4;
 n = histc(thetadiff_pos, edges);
 pdf_pos = n ./ sum(n);
-hp = plot(edges, pdf_pos, 'o-', 'markersize', markersize, 'markerfacecolor', cmap(1,:), 'markeredgecolor', cmap(1,:) );
+hp = plot(edges, pdf_pos, 's-', 'markersize', markersize, 'markerfacecolor', cmap(1,:), 'markeredgecolor', cmap(1,:) );
 set(hp, 'color', cmap(1,:));
 
-n = histc(thetadiff_neg, edges);
-pdf_neg = n ./ sum(n);
-hp = plot(edges, pdf_neg, 'o-', 'markersize', markersize, 'markerfacecolor', cmap(2,:), 'markeredgecolor', cmap(2,:) );
-set(hp, 'color', cmap(2,:));
+% n = histc(thetadiff_neg, edges);
+% pdf_neg = n ./ sum(n);
+% hp = plot(edges, pdf_neg, 'o-', 'markersize', markersize, 'markerfacecolor', cmap(2,:), 'markeredgecolor', cmap(2,:) );
+% set(hp, 'color', cmap(2,:));
 
 n = histc(thetadiff_pos_neg, edges);
 pdf_pos_neg = n ./ sum(n);
-hp = plot(edges, pdf_pos_neg, 'o-', 'markersize', markersize, 'markerfacecolor', cmap(3,:), 'markeredgecolor', cmap(3,:) );
+hp = plot(edges, pdf_pos_neg, 's-', 'markersize', markersize, 'markerfacecolor', cmap(3,:), 'markeredgecolor', cmap(3,:) );
 set(hp, 'color', cmap(3,:));
 
 hold on;
@@ -225,7 +225,7 @@ xlim([min(edges)-0.025*range max(edges)+0.025*range]);
 ylim([0 0.4]);
 ylabel('Proportion');
 xlabel('Theta Difference (SD)');
-legend('Pos', 'Neg', 'Pos+Neg');
+legend('EP only', 'EP+SP');
 subplot_label(gca,'B');
 
 
@@ -242,15 +242,15 @@ xlim([min(xytick) max(xytick)]);
 ylim([min(xytick) max(xytick)]);
 plot(xlim, ylim, 'k-');
 
-plot(sigma_larger_pos, sigma_smaller_pos, 'o', 'color', cmap(1,:), ...
+plot(sigma_larger_pos, sigma_smaller_pos, 's', 'color', cmap(1,:), ...
    'markersize', markersize, 'markerfacecolor', cmap(1,:), ...
    'markeredgecolor', cmap(1,:));
 
-plot(sigma_larger_neg, sigma_smaller_neg, 'o', 'color', cmap(2,:), ...
-   'markersize', markersize, 'markerfacecolor', cmap(2,:), ...
-   'markeredgecolor', cmap(2,:));
+% plot(sigma_larger_neg, sigma_smaller_neg, 'o', 'color', cmap(2,:), ...
+%    'markersize', markersize, 'markerfacecolor', cmap(2,:), ...
+%    'markeredgecolor', cmap(2,:));
 
-plot(sigma_larger_pos_neg, sigma_smaller_pos_neg, 'o', 'color', cmap(3,:), ...
+plot(sigma_larger_pos_neg, sigma_smaller_pos_neg, 's', 'color', cmap(3,:), ...
    'markersize', markersize, 'markerfacecolor', cmap(3,:), ...
    'markeredgecolor', cmap(3,:));
 
@@ -268,17 +268,17 @@ hold on;
 edges = 0:0.5:4;
 n = histc(sigmadiff_pos, edges);
 pdf_pos = n ./ sum(n);
-hp = plot(edges, pdf_pos, 'o-', 'markersize', markersize, 'markerfacecolor', cmap(1,:), 'markeredgecolor', cmap(1,:) );
+hp = plot(edges, pdf_pos, 's-', 'markersize', markersize, 'markerfacecolor', cmap(1,:), 'markeredgecolor', cmap(1,:) );
 set(hp, 'color', cmap(1,:));
 
-n = histc(sigmadiff_neg, edges);
-pdf_neg = n ./ sum(n);
-hp = plot(edges, pdf_neg, 'o-', 'markersize', markersize, 'markerfacecolor', cmap(2,:), 'markeredgecolor', cmap(2,:) );
-set(hp, 'color', cmap(2,:));
+% n = histc(sigmadiff_neg, edges);
+% pdf_neg = n ./ sum(n);
+% hp = plot(edges, pdf_neg, 'o-', 'markersize', markersize, 'markerfacecolor', cmap(2,:), 'markeredgecolor', cmap(2,:) );
+% set(hp, 'color', cmap(2,:));
 
 n = histc(sigmadiff_pos_neg, edges);
 pdf_pos_neg = n ./ sum(n);
-hp = plot(edges, pdf_pos_neg, 'o-', 'markersize', markersize, 'markerfacecolor', cmap(3,:), 'markeredgecolor', cmap(3,:) );
+hp = plot(edges, pdf_pos_neg, 's-', 'markersize', markersize, 'markerfacecolor', cmap(3,:), 'markeredgecolor', cmap(3,:) );
 set(hp, 'color', cmap(3,:));
 
 hold on;

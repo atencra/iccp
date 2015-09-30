@@ -1,7 +1,7 @@
-function iccpairs_plot_fradata_q(fradata)
-% iccpairs_plot_fradata_bw ICC Pairwise FRA Q comparison
+function iccp_plot_fradata_q(fradata)
+% iccp_plot_fradata_bw ICC Pairwise FRA Q comparison
 % 
-%     iccpairs_plot_fradata_q(fradata)
+%     iccp_plot_fradata_q(fradata)
 % 
 % 
 %     fradata : struct holding pairwise fra data. Obtained from

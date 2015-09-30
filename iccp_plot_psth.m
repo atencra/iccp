@@ -1,10 +1,10 @@
-function [r] = vs_plot_psth(resp, dt, T)
+function [r] = iccp_plot_psth(resp, dt, T)
 
-% plot_psth Generates raster plot, PSTH, and stimulus spectrogram for a
+% iccp_plot_psth Generates raster plot, PSTH, and stimulus spectrogram for a
 % given response file and dt value
-
-% [r] = plot_psth(resp,dt,graphs)
-
+%
+% [r] = iccp_plot_psth(resp,dt,graphs)
+%
 % Inputs:
 % ------------------------------
 % 1) resp: STRF response data. Saved as resp_final, or input from

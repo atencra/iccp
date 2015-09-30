@@ -1,10 +1,13 @@
-function vs_plot_strf_pairs_multiple(strf,trigger,flim,tlim)
-%plot_strf_pairs_multiple  Values from same channel cross-corr functions
+function iccp_plot_strf_pairs_multiple(strf,trigger,flim,tlim)
+%plot_strf_pairs_multiple STRFs for multiple pairs of neurons
 %
-% plot_strf_pairs_multiple
-% Performs pairwise analysis on STRFs, then uses plot_strf_single to plot
-% the paired STRFs in a 5x4 grid. The first and second columns are paired,
-% and the third and fourth columns are paired.
+% iccp_plot_strf_pairs_multiple(strf,trigger,flim,tlim) plots the strfs 
+% in the strf struct array.
+%
+% iccp_plot_strf_pairs_multiple; goes through each *-strfcmb-pairs.mat and
+% plots the data.
+
+
 
 if ( nargin == 0)
    d = dir('*-strfcmb-pairs.mat');

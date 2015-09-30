@@ -1,5 +1,5 @@
-function iccpairs_plot_nonlinearity_asi_si_crosscorr_pos_neg(ccpairs)
-% iccpairs_plot_nonlinearity_asi_si_crosscorr_pos_neg Compare nonlinearity ASI, SI
+function iccp_plot_nonlinearity_asi_si_crosscorr_pos_neg(ccpairs)
+% iccp_plot_nonlinearity_asi_si_crosscorr_pos_neg Compare nonlinearity ASI, SI
 % 
 %    iccpairs_plot_nonlinearity_asi_si_crosscorr_pos_neg(ccpairs)
 % 
@@ -70,29 +70,29 @@ asi_pos_neg = asi(index_pos_neg,:);
 
 % Order asymmetry based on magnitude, and calculate the difference between
 % the values for a pair of neurons
-[larger_pos,smaller_pos] = vs_largersmaller(asi_pos(:,1),asi_pos(:,2));
+[larger_pos,smaller_pos] = iccp_largersmaller(asi_pos(:,1),asi_pos(:,2));
 asidiff_pos = abs( larger_pos - smaller_pos );
 
-[larger_neg,smaller_neg] = vs_largersmaller(asi_neg(:,1),asi_neg(:,2));
+[larger_neg,smaller_neg] = iccp_largersmaller(asi_neg(:,1),asi_neg(:,2));
 asidiff_neg = abs( larger_neg - smaller_neg );
 
-[larger_pos_neg,smaller_pos_neg] = vs_largersmaller(asi_pos_neg(:,1),asi_pos_neg(:,2));
+[larger_pos_neg,smaller_pos_neg] = iccp_largersmaller(asi_pos_neg(:,1),asi_pos_neg(:,2));
 asidiff_pos_neg = abs( larger_pos_neg - smaller_pos_neg );
 
 fprintf('\n');
 label = 'FIO ASI';
-iccpairs_ccc_pos_neg_summary(asidiff_pos, asidiff_neg, asidiff_pos_neg, label);
+iccp_ccc_pos_neg_summary(asidiff_pos, asidiff_neg, asidiff_pos_neg, label);
 
 
 
 fprintf('\n');
 label = 'FIO SI';
-iccpairs_ccc_pos_neg_summary(si_pos, si_neg, si_pos_neg, label);
+iccp_ccc_pos_neg_summary(si_pos, si_neg, si_pos_neg, label);
 
 
 
 % Plotting specs
-cmap = cschemes('blues', 4);
+cmap = brewmaps('blues', 4);
 cmap = cmap(1:3,:);
 markersize = 4;
 
@@ -105,15 +105,15 @@ xlim([0.5 1]);
 ylim([xlim]);
 plot([xlim], [xlim], 'k-');
 
-plot(larger_pos, smaller_pos, 'o', 'color', cmap(1,:), ...
+plot(larger_pos, smaller_pos, 's', 'color', cmap(1,:), ...
    'markersize', markersize, 'markerfacecolor', cmap(1,:), ...
    'markeredgecolor', cmap(1,:));
 
-plot(larger_neg, smaller_neg, 'o', 'color', cmap(2,:), ...
-   'markersize', markersize, 'markerfacecolor', cmap(2,:), ...
-   'markeredgecolor', cmap(2,:));
+% plot(larger_neg, smaller_neg, 'o', 'color', cmap(2,:), ...
+%    'markersize', markersize, 'markerfacecolor', cmap(2,:), ...
+%    'markeredgecolor', cmap(2,:));
 
-plot(larger_pos_neg, smaller_pos_neg, 'o', 'color', cmap(3,:), ...
+plot(larger_pos_neg, smaller_pos_neg, 's', 'color', cmap(3,:), ...
    'markersize', markersize, 'markerfacecolor', cmap(3,:), ...
    'markeredgecolor', cmap(3,:));
 
@@ -122,7 +122,7 @@ tick = 0.5:0.1:1;
 set(gca,'xtick', tick, 'xticklabel', tick);
 set(gca,'ytick', tick, 'yticklabel', tick);
 xlabel('ASI Neuron 1');
-ylabel('ASI Neuron 1');
+ylabel('ASI Neuron 2');
 subplot_label(gca,'A');
 
 
@@ -131,17 +131,17 @@ hold on;
 edges_asi = 0:0.025:0.5;
 n = histc(asidiff_pos, edges_asi);
 pdf_pos = n ./ sum(n);
-hp = plot(edges_asi, pdf_pos, 'o-', 'markersize', markersize, 'markerfacecolor', cmap(1,:), 'markeredgecolor', cmap(1,:) );
+hp = plot(edges_asi, pdf_pos, 's-', 'markersize', markersize, 'markerfacecolor', cmap(1,:), 'markeredgecolor', cmap(1,:) );
 set(hp, 'color', cmap(1,:));
 
-n = histc(asidiff_neg, edges_asi);
-pdf_neg = n ./ sum(n);
-hp = plot(edges_asi, pdf_neg, 'o-', 'markersize', markersize, 'markerfacecolor', cmap(2,:), 'markeredgecolor', cmap(2,:) );
-set(hp, 'color', cmap(2,:));
+% n = histc(asidiff_neg, edges_asi);
+% pdf_neg = n ./ sum(n);
+% hp = plot(edges_asi, pdf_neg, 'o-', 'markersize', markersize, 'markerfacecolor', cmap(2,:), 'markeredgecolor', cmap(2,:) );
+% set(hp, 'color', cmap(2,:));
 
 n = histc(asidiff_pos_neg, edges_asi);
 pdf_pos_neg = n ./ sum(n);
-hp = plot(edges_asi, pdf_pos_neg, 'o-', 'markersize', markersize, 'markerfacecolor', cmap(3,:), 'markeredgecolor', cmap(3,:) );
+hp = plot(edges_asi, pdf_pos_neg, 's-', 'markersize', markersize, 'markerfacecolor', cmap(3,:), 'markeredgecolor', cmap(3,:) );
 set(hp, 'color', cmap(3,:));
 
 hold on;
@@ -157,7 +157,7 @@ xlim([min(edges_asi)-0.025*range max(edges_asi)+0.025*range]);
 ylim([0 0.4]);
 ylabel('Proportion');
 xlabel('ASI Difference');
-legend('Pos', 'Neg', 'Pos+Neg');
+legend('Pos', 'Pos+Neg');
 subplot_label(gca,'B');
 
 
@@ -168,17 +168,17 @@ hold on;
 edges_si = 0.4:0.025:1;
 n = histc(si_pos, edges_si);
 pdf_pos = n ./ sum(n);
-hp = plot(edges_si(1:end-1), pdf_pos(1:end-1), 'o-', 'markersize', markersize, 'markerfacecolor', cmap(1,:), 'markeredgecolor', cmap(1,:) );
+hp = plot(edges_si(1:end-1), pdf_pos(1:end-1), 's-', 'markersize', markersize, 'markerfacecolor', cmap(1,:), 'markeredgecolor', cmap(1,:) );
 set(hp, 'color', cmap(1,:));
 
-n = histc(si_neg, edges_si);
-pdf_neg = n ./ sum(n);
-hp = plot(edges_si(1:end-1), pdf_neg(1:end-1), 'o-', 'markersize', markersize, 'markerfacecolor', cmap(2,:), 'markeredgecolor', cmap(2,:) );
-set(hp, 'color', cmap(2,:));
+% n = histc(si_neg, edges_si);
+% pdf_neg = n ./ sum(n);
+% hp = plot(edges_si(1:end-1), pdf_neg(1:end-1), 'o-', 'markersize', markersize, 'markerfacecolor', cmap(2,:), 'markeredgecolor', cmap(2,:) );
+% set(hp, 'color', cmap(2,:));
 
 n = histc(si_pos_neg, edges_si);
 pdf_pos_neg = n ./ sum(n);
-hp = plot(edges_si(1:end-1), pdf_pos_neg(1:end-1), 'o-', 'markersize', markersize, 'markerfacecolor', cmap(3,:), 'markeredgecolor', cmap(3,:) );
+hp = plot(edges_si(1:end-1), pdf_pos_neg(1:end-1), 's-', 'markersize', markersize, 'markerfacecolor', cmap(3,:), 'markeredgecolor', cmap(3,:) );
 set(hp, 'color', cmap(3,:));
 
 % [edges_si(:) pdf_pos(:) pdf_neg(:) pdf_pos_neg(:)]
