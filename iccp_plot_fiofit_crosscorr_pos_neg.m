@@ -1,41 +1,49 @@
 function iccp_plot_fiofit_crosscorr_pos_neg(ccpairs)
-% nonlinearity_parameter_analysis: Looks at nonlinearity parameters from
-%                                  *-sta-fio-fitparams.mat files.
 
-% Loops through all sta-fio-fitparams data, and:
-% 1) Performs pairwise analysis on sigma, theta, and asymmetry index values.
-% 2) Plots difference histograms for sigma, theta, and asymmetry index
-%       pairs, as well as scatterplots of the pairs.
-% 3) Plots sigma population values vs. theta population values.
-% 4) Plots population histograms for sigma and theta values.
+
+
 
 
 close all;
 
 
-% Get correlation analysis results
-pd_pos = [ccpairs.pd_pos];
-hw_pos = [ccpairs.hw_pos];
-sigfeature_pos = [ccpairs.sigfeature_pos];
-sigfeature_pos = logical(sigfeature_pos);
-ccc_pos = [ccpairs.ccc_pos];
-ccc_pos(ccc_pos < 0) = 0.0001;
+% % Get correlation analysis results
+% pd_pos = [ccpairs.pd_pos];
+% hw_pos = [ccpairs.hw_pos];
+% sigfeature_pos = [ccpairs.sigfeature_pos];
+% sigfeature_pos = logical(sigfeature_pos);
+% ccc_pos = [ccpairs.ccc_pos];
+% ccc_pos(ccc_pos < 0) = 0.0001;
+% 
+% pd_neg = [ccpairs.pd_neg];
+% hw_neg = [ccpairs.hw_neg];
+% sigfeature_neg = [ccpairs.sigfeature_neg];
+% sigfeature_neg = logical(sigfeature_neg);
+% ccc_neg = [ccpairs.ccc_neg];
+% ccc_neg(ccc_neg < 0) = 0.0001;
+% 
+% 
+% % Possibilities: Positive only peaks, Negative only peaks, Both Positive and Negative peaks
+% % Any significant peak = sum of the previous options
+% 
+% index_pos_only = sigfeature_pos & ~sigfeature_neg;
+% index_neg_only = ~sigfeature_pos & sigfeature_neg;
+% index_pos_neg = sigfeature_pos & sigfeature_neg;
+% index_any = sigfeature_pos | sigfeature_neg;
 
-pd_neg = [ccpairs.pd_neg];
-hw_neg = [ccpairs.hw_neg];
-sigfeature_neg = [ccpairs.sigfeature_neg];
-sigfeature_neg = logical(sigfeature_neg);
-ccc_neg = [ccpairs.ccc_neg];
-ccc_neg(ccc_neg < 0) = 0.0001;
 
+
+[pdPos, hwPos, cccPos, pdNeg, hwNeg, cccNeg, sigPos, sigNeg] = ...
+    ccpairs_to_sigfeature(ccpairs);
 
 % Possibilities: Positive only peaks, Negative only peaks, Both Positive and Negative peaks
 % Any significant peak = sum of the previous options
 
-index_pos_only = sigfeature_pos & ~sigfeature_neg;
-index_neg_only = ~sigfeature_pos & sigfeature_neg;
-index_pos_neg = sigfeature_pos & sigfeature_neg;
-index_any = sigfeature_pos | sigfeature_neg;
+index_pos_only = sigPos & ~sigNeg;
+index_neg_only = ~sigPos & sigNeg;
+index_pos_neg = sigPos & sigNeg;
+index_any = sigPos | sigNeg;
+
 
 fprintf('\n');
 fprintf('Positive only peaks: %.0f\n', sum(index_pos_only) );
@@ -117,6 +125,45 @@ theta_larger_pos_neg = theta_larger_pos_neg(nmse_pos_neg);
 theta_smaller_pos_neg = theta_smaller_pos_neg(nmse_pos_neg);
 thetadiff_pos_neg = abs( theta_larger_pos_neg - theta_smaller_pos_neg );
 
+
+
+% Split Nonlinearity Threshold (theta) into the three correlation groups
+theta_pos = theta(index_pos_only,:);
+theta_neg = theta(index_neg_only,:);
+theta_pos_neg = theta(index_pos_neg,:);
+
+[theta_larger_pos, theta_smaller_pos] = iccp_largersmaller(theta_pos(:,1),theta_pos(:,2));
+theta_larger_pos = theta_larger_pos(nmse_pos);
+theta_smaller_pos = theta_smaller_pos(nmse_pos);
+thetadiff_pos = abs( theta_larger_pos - theta_smaller_pos );
+
+[theta_larger_neg, theta_smaller_neg] = iccp_largersmaller(theta_neg(:,1),theta_neg(:,2));
+theta_larger_neg = theta_larger_neg(nmse_neg);
+theta_smaller_neg = theta_smaller_neg(nmse_neg);
+thetadiff_neg = abs( theta_larger_neg - theta_smaller_neg );
+
+[theta_larger_pos_neg, theta_smaller_pos_neg] = iccp_largersmaller(theta_pos_neg(:,1),theta_pos_neg(:,2));
+theta_larger_pos_neg = theta_larger_pos_neg(nmse_pos_neg);
+theta_smaller_pos_neg = theta_smaller_pos_neg(nmse_pos_neg);
+thetadiff_pos_neg = abs( theta_larger_pos_neg - theta_smaller_pos_neg );
+
+
+% Make a random distribution, sample, compute paired differences, and plot.
+dataUnq = unique(theta);
+indexRand = ceil(length(dataUnq) * rand(1,size(theta,1)));
+sampleRand1 = dataUnq(indexRand);
+
+indexRand = ceil(length(dataUnq) * rand(1,size(theta,1)));
+sampleRand2 = dataUnq(indexRand);
+
+[larger,smaller] = iccp_largersmaller(sampleRand1,sampleRand2);
+thetadiffRand = abs( larger - smaller );
+
+
+pval = ranksum(thetadiffRand, thetadiff_pos)
+pval = ranksum(thetadiffRand, thetadiff_pos_neg)
+
+
 fprintf('\n');
 label = 'FIO Theta';
 iccp_ccc_pos_neg_summary(thetadiff_pos, thetadiff_neg, thetadiff_pos_neg, label);
@@ -151,6 +198,23 @@ sigmadiff_neg = abs( sigma_larger_neg - sigma_smaller_neg );
 sigma_larger_pos_neg = sigma_larger_pos_neg(nmse_pos_neg);
 sigma_smaller_pos_neg = sigma_smaller_pos_neg(nmse_pos_neg);
 sigmadiff_pos_neg = abs( sigma_larger_pos_neg - sigma_smaller_pos_neg );
+
+
+% Make a random distribution, sample, compute paired differences, and plot.
+dataUnq = unique(sigma);
+indexRand = ceil(length(dataUnq) * rand(1,size(theta,1)));
+sampleRand1 = dataUnq(indexRand);
+
+indexRand = ceil(length(dataUnq) * rand(1,size(theta,1)));
+sampleRand2 = dataUnq(indexRand);
+
+[larger,smaller] = iccp_largersmaller(sampleRand1,sampleRand2);
+sigmadiffRand = abs( larger - smaller );
+
+pval = ranksum(sigmadiffRand, sigmadiff_pos)
+pval = ranksum(sigmadiffRand, sigmadiff_pos_neg)
+
+
 
 fprintf('\n');
 label = 'FIO Sigma';
@@ -212,6 +276,15 @@ pdf_pos_neg = n ./ sum(n);
 hp = plot(edges, pdf_pos_neg, 's-', 'markersize', markersize, 'markerfacecolor', cmap(3,:), 'markeredgecolor', cmap(3,:) );
 set(hp, 'color', cmap(3,:));
 
+
+n = histc(thetadiffRand, edges);
+pdfRand = n ./ sum(n);
+hp = plot(edges, pdfRand, 'k-');
+set(hp, 'color', 'k', 'linewidth', 2);
+
+
+
+
 hold on;
 box off;
 tickpref;
@@ -225,7 +298,7 @@ xlim([min(edges)-0.025*range max(edges)+0.025*range]);
 ylim([0 0.4]);
 ylabel('Proportion');
 xlabel('Theta Difference (SD)');
-legend('EP only', 'EP+SP');
+legend('EP only', 'EP+SP','Rand');
 subplot_label(gca,'B');
 
 
@@ -280,6 +353,12 @@ n = histc(sigmadiff_pos_neg, edges);
 pdf_pos_neg = n ./ sum(n);
 hp = plot(edges, pdf_pos_neg, 's-', 'markersize', markersize, 'markerfacecolor', cmap(3,:), 'markeredgecolor', cmap(3,:) );
 set(hp, 'color', cmap(3,:));
+
+n = histc(sigmadiffRand, edges);
+pdfRand = n ./ sum(n);
+hp = plot(edges, pdfRand, 'k-');
+set(hp, 'color', 'k', 'linewidth', 2);
+
 
 hold on;
 box off;

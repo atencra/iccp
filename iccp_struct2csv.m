@@ -1,9 +1,12 @@
 function iccp_struct2csv(data,csvfile)
 % iccp_struct2csv Write struct data to csv file 
 % 
+%    iccp_struct2csv(data,csvfile)
 %
 %    data : struct holding paired data. Each field of data holds an
 %    Nx1 vector or an Nx2 array.
+%
+%    csvfile : name of output file. Default = 'data.csv'
 %
 %    data is obtained from functions like:
 %
@@ -20,9 +23,7 @@ function iccp_struct2csv(data,csvfile)
 %    the fields of the struct. For the Nx2 arrays, each column is written 
 %    to a column of the csv, and the headers have a '1' or a '2' appended 
 %    to the name.
-%
-%    csvfile = iccp_strf_si_ccc_to_csv(data,csvfile) saves the data in the
-%    file csvfile.csv.
+
 
 
 narginchk(1,2);

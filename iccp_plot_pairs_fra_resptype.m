@@ -1,4 +1,4 @@
-function [nb_nb_ne, ne_nb_ne] = iccp_plot_pairs_fra_resptype(nb_nb_ne, ne_nb_ne)
+function [varargout] = iccp_plot_pairs_fra_resptype(nb_nb_ne, ne_nb_ne)
 % iccp_plot_pairs_fra_resptype Compare response types of ICC pairs
 %
 % [nb_nb_ne, ne_nb_ne] = iccp_plot_pairs_fra_resptype(nb_nb_ne, ne_nb_ne)
@@ -26,7 +26,8 @@ function [nb_nb_ne, ne_nb_ne] = iccp_plot_pairs_fra_resptype(nb_nb_ne, ne_nb_ne)
 
 % Get data from files if no input arguments
 if ( nargin == 0 )
-   [position, nb_nb_ne, ne_nb_ne] = get_pairs_fra_resptype;
+    [position, nb_nb_ne, ne_nb_ne] = get_pairs_fra_resptype;
+    [rtStr] = iccp_pairs_fra_resptype_files_to_struct;
 end
 
 close all;
@@ -37,6 +38,24 @@ iccp_plot_pairs_fra_resptype_scatter_hist(nb_nb_ne, ne_nb_ne);
 
 % Randomization test for response types
 iccp_plot_pairs_fra_resptype_diff_rand(nb_nb_ne, ne_nb_ne);
+
+
+if ( nargout == 1 )
+    varargout{1} = nb_nb_ne;
+end
+
+if ( nargout == 2 )
+    varargout{1} = nb_nb_ne;
+    varargout{2} = ne_nb_ne;
+end
+
+if ( nargout == 3 && nargin == 0 )
+    varargout{1} = nb_nb_ne;
+    varargout{2} = ne_nb_ne;
+    varargout{3} = rtStr;
+end
+
+
 
 return;
 
@@ -87,6 +106,51 @@ for n = 1:length(d)
 
 end % (for n)
 return;
+
+
+
+
+
+
+function [rtStr] = iccp_pairs_fra_resptype_files_to_struct
+
+position = [];
+nb_nb_ne = [];
+ne_nb_ne = [];
+
+d = dir('*-fracmb-pairs-resptype.mat');
+
+rtStr = [];
+
+for n = 1:length(d)
+
+    filename = d(n).name;
+    s = load(filename, 'rt');
+    rt = s.rt;
+
+    for j = 1:length(rt)
+
+        rtStrTemp.file = filename;
+        rtStrTemp.index = j;
+        rtStrTemp.nb_nb_ne = rt(j).nb_nb_ne_total;
+        rtStrTemp.ne_nb_ne = rt(j).ne_nb_ne_total;
+
+        rtStr = [rtStr rtStrTemp];
+    end % (for j)
+
+end % (for n)
+
+return;
+
+
+
+
+
+
+
+
+
+
 
 
 

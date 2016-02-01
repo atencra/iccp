@@ -66,11 +66,22 @@
 % * iccpairs_plot_mtfdata_btmf_bsmf(mtfdata)
 % * iccpairs_plot_fiodata(fiodata)
 
+%% Plots with ccpairs struct array. Assumes that pos and neg temporal interactions have been analyzed. See Synchony Analysis above.
+% * iccp_plot_crosscorr_pd_hw_ccc_pos_neg(ccpairs, showstats)
+% * iccp_plot_strf_fr_pli_crosscorr_pos_neg(ccpairs)
+% * iccp_plot_strf_similarity_crosscorr_pos_neg(ccpairs)
+% * iccp_plot_strf_cf_q_latency_crosscorr_pos_neg(ccpairs) 
+% * iccp_plot_strf_bmf_crosscorr_pos_neg(ccpairs)
+% * iccp_plot_nonlinearity_asi_si_crosscorr_pos_neg(ccpairs)
+% * iccp_plot_fiofit_crosscorr_pos_neg(ccpairs)
+
 
 %% Saving data to a csv file
 % * iccp_struct2csv(data,csvfile): data is from synchrony analysis, csvfile is user specified
 
 
+%% Getting unique neurons and their values from ccpairs
+% * [id,table] = iccp_ccpairs_to_table(ccpairs)
 
 
 

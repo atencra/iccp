@@ -45,7 +45,7 @@ close all;
 % vs_plot_pairs_fra_bw_diff_rand(bw);
 
 
-% vs_plot_pairs_fra_q_scatter_hist(Q);
+vs_plot_pairs_fra_q_scatter_hist(Q);
 
 % vs_plot_pairs_fra_q_diff_rand(Q)
 
@@ -308,52 +308,57 @@ minmin = 0.125;
 maxmax = 32;
 
 for i = 1:4
-   data = bwdata{i};
-   datadiff = bwdiff_oct{i};
+    data = bwdata{i};
+    datadiff = bwdiff_oct{i};
 
-   subplot(4,2,(i-1)*2+1);
-   hold on
-   xlim([minmin maxmax]);
-   ylim([minmin maxmax]);
-   plot(xlim, ylim, 'k-');
-   [larger, smaller] = vs_largersmaller(bwdata{i}(:,1),bwdata{i}(:,2));
-   scatter(larger,smaller,20,'MarkerEdgeColor', 'black', 'MarkerFaceColor', [0.6 0.6 0.6])
-   xlim([minmin maxmax])
-   ylim([minmin maxmax])
-   tickpref
-   box off
-   set(gca,'xtick', bwtick, 'xticklabel', bwtick);
-   set(gca,'ytick', bwtick, 'yticklabel', bwtick);
-   set(gca,'xscale', 'log', 'yscale', 'log');
-   ylabel(sprintf('%s Neuron 2 (kHz)',label{i}))
-   xlabel(sprintf('%s Neuron 1 (kHz)',label{i}))
+    subplot(4,2,(i-1)*2+1);
+    hold on
+    xlim([minmin maxmax]);
+    ylim([minmin maxmax]);
+    plot(xlim, ylim, 'k-');
+    [larger, smaller] = iccp_largersmaller(bwdata{i}(:,1),bwdata{i}(:,2));
+    plot(larger,smaller, 'ko', ...
+        'MarkerEdgeColor', 'black', ...
+        'MarkerSize', 2);
+%        'MarkerFaceColor', [0.6 0.6 0.6], ...
+%        'MarkerSize', 3)
 
-
-   subplot(4,2,(i)*2);
-   n = histc(datadiff, edges);
-   n = n./sum(n);
-   hb = bar(edges,n,'histc');
-   set(hb, 'FaceColor', [0.6 0.6 0.6])
-   xlabel('BW Difference (oct)');
-   ylabel('Proportion');
-   xlim([min(edges) max(edges)]);
-   ylim([0 ydiffmax(i)]);
-   set(gca,'xtick', 0:1:4, 'xticklabel', 0:1:4);
-   set(gca,'ytick', ytick{i}, 'yticklabel', ytick{i});
-   tickpref
-   box off
+    xlim([minmin maxmax])
+    ylim([minmin maxmax])
+    tickpref
+    box off
+    set(gca,'xtick', bwtick, 'xticklabel', bwtick);
+    set(gca,'ytick', bwtick, 'yticklabel', bwtick);
+    set(gca,'xscale', 'log', 'yscale', 'log');
+    ylabel(sprintf('%s Neuron 2 (kHz)',label{i}))
+    xlabel(sprintf('%s Neuron 1 (kHz)',label{i}))
 
 
-   fprintf('\n%s\n',label{i});
-   [r,p] = corrcoef(larger, smaller);
-   fprintf('r = %.4f, p = %.4f\n', r(2), p(2) );
+    subplot(4,2,(i)*2);
+    n = histc(datadiff, edges);
+    n = n./sum(n);
+    hb = bar(edges,n,'histc');
+    set(hb, 'FaceColor', [0.6 0.6 0.6])
+    xlabel('BW Difference (oct)');
+    ylabel('Proportion');
+    xlim([min(edges) max(edges)]);
+    ylim([0 ydiffmax(i)]);
+    set(gca,'xtick', 0:1:4, 'xticklabel', 0:1:4);
+    set(gca,'ytick', ytick{i}, 'yticklabel', ytick{i});
+    tickpref
+    box off
 
-   dstats = simple_stats(datadiff);
 
-   fprintf('\n');
-   fprintf('MN = %.4f, SD = %.4f, SE = %.4f, MD = %.4f, MAD = %.4f, n = %.0f\n',...
-      dstats.mn, dstats.sd, dstats.se, dstats.md, dstats.mad, length(datadiff) );
-   fprintf('\n');
+    fprintf('\n%s\n',label{i});
+    [r,p] = corrcoef(larger, smaller);
+    fprintf('r = %.4f, p = %.4f\n', r(2), p(2) );
+
+    dstats = simple_stats(datadiff);
+
+    fprintf('\n');
+    fprintf('MN = %.4f, SD = %.4f, SE = %.4f, MD = %.4f, MAD = %.4f, n = %.0f\n',...
+    dstats.mn, dstats.sd, dstats.se, dstats.md, dstats.mad, length(datadiff) );
+    fprintf('\n');
 
 
 end % (for i)
@@ -527,8 +532,11 @@ for i = 1:4
    xlim([minmin maxmax]);
    ylim([minmin maxmax]);
    plot(xlim, ylim, 'k-');
-   [larger, smaller] = vs_largersmaller(qdata{i}(:,1),qdata{i}(:,2));
-   scatter(larger,smaller,20, 'MarkerEdgeColor', 'black', 'MarkerFaceColor', [0.6 0.6 0.6])
+   [larger, smaller] = iccp_largersmaller(qdata{i}(:,1),qdata{i}(:,2));
+
+    plot(larger,smaller, 'ko', ...
+        'MarkerEdgeColor', 'black', ...
+        'MarkerSize', 2);
 
    xlim([minmin maxmax])
    ylim([minmin maxmax])

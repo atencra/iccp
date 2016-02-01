@@ -19,29 +19,16 @@ function iccp_plot_nonlinearity_asi_si_crosscorr_pos_neg(ccpairs)
 close all;
 
 
-% Get correlation analysis results
-pd_pos = [ccpairs.pd_pos];
-hw_pos = [ccpairs.hw_pos];
-sigfeature_pos = [ccpairs.sigfeature_pos];
-sigfeature_pos = logical(sigfeature_pos);
-ccc_pos = [ccpairs.ccc_pos];
-ccc_pos(ccc_pos < 0) = 0.0001;
-
-pd_neg = [ccpairs.pd_neg];
-hw_neg = [ccpairs.hw_neg];
-sigfeature_neg = [ccpairs.sigfeature_neg];
-sigfeature_neg = logical(sigfeature_neg);
-ccc_neg = [ccpairs.ccc_neg];
-ccc_neg(ccc_neg < 0) = 0.0001;
-
+[pdPos, hwPos, cccPos, pdNeg, hwNeg, cccNeg, sigPos, sigNeg] = ...
+    ccpairs_to_sigfeature(ccpairs);
 
 % Possibilities: Positive only peaks, Negative only peaks, Both Positive and Negative peaks
 % Any significant peak = sum of the previous options
 
-index_pos_only = sigfeature_pos & ~sigfeature_neg;
-index_neg_only = ~sigfeature_pos & sigfeature_neg;
-index_pos_neg = sigfeature_pos & sigfeature_neg;
-index_any = sigfeature_pos | sigfeature_neg;
+index_pos_only = sigPos & ~sigNeg;
+index_neg_only = ~sigPos & sigNeg;
+index_pos_neg = sigPos & sigNeg;
+index_any = sigPos | sigNeg;
 
 fprintf('Positive only peaks: %.0f\n', sum(index_pos_only) );
 fprintf('Negative only peaks: %.0f\n', sum(index_neg_only) );

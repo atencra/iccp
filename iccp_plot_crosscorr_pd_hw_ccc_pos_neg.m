@@ -26,7 +26,7 @@ data = iccp_get_ccpairs_pos_neg_data(ccpairs);
 
 iccp_plot_ccpairs_pos_neg_pd_hw_ccc(data, showstats);
 
-iccp_plot_ccpairs_pos_pd_hw_ccc(data, showstats);
+%iccp_plot_ccpairs_pos_pd_hw_ccc(data, showstats);
 
 return;
 
@@ -243,9 +243,9 @@ for i = 1:length(cmapcell)
    xlabel('Peak Delay (ms)');
    ylabel('Proportion')
    xlim([min(edges_pd) max(edges_pd)]);
-   ylim([0 0.4]);
+   ylim([0 0.45]);
    set(gca,'xtick', edges_pd(1:2:end), 'xticklabel', edges_pd(1:2:end));
-   ytick = 0:0.1:0.4;
+   ytick = 0:0.1:0.6;
    set(gca,'ytick', ytick, 'yticklabel', ytick);
    box off;
    tickpref;
@@ -287,7 +287,7 @@ for i = 1:length(cmapcell)
 
    set(gca,'xscale','log')
    axis([0.000001 0.1 0 0.2])
-   ylim([0 0.21]);
+   ylim([0 0.25]);
    ytick = 0:0.05:0.25;
    set(gca,'ytick', ytick, 'yticklabel', ytick);
    xlim([min(edges_ccc) max(edges_ccc)]);
@@ -371,74 +371,20 @@ return;
 function data = iccp_get_ccpairs_pos_neg_data(ccpairs)
 
 
+[pdPos, hwPos, cccPos, pdNeg, hwNeg, cccNeg, sigPos, sigNeg] = ...
+    ccpairs_to_sigfeature(ccpairs);
 
 
+data.sigPos = sigPos(:);
+data.sigNeg = sigNeg(:);
 
-if ( isfield(ccpairs,'pd_pos') && isfield(ccpairs,'pd_neg') )
-    pd_pos = [ccpairs.pd_pos];
-    pd_pos = abs(pd_pos); % only absolute value matters, not direction
-    hw_pos = [ccpairs.hw_pos];
-    sigfeature_pos = [ccpairs.sigfeature_pos];
-    sigfeature_pos = logical(sigfeature_pos);
-    ccc_pos = [ccpairs.ccc_pos];
-    ccc_pos(ccc_pos < 0) = 0.0001;
+data.pdPos = pdPos(:);
+data.hwPos = hwPos(:);
+data.cccPos = cccPos(:);
 
-    pd_neg = [ccpairs.pd_neg];
-    pd_neg = abs(pd_neg);
-    hw_neg = [ccpairs.hw_neg];
-    sigfeature_neg = [ccpairs.sigfeature_neg];
-    sigfeature_neg = logical(sigfeature_neg);
-    ccc_neg = [ccpairs.ccc_neg];
-    ccc_neg(ccc_neg < 0) = 0.0001;
-
-
-    % Possibilities:
-    % Positive only peaks
-    % Negative only peaks
-    % Both Positive and Negative peaks
-    % Any significant peak
-
-
-    index_pos_only = sigfeature_pos & ~sigfeature_neg;
-    index_neg_only = ~sigfeature_pos & sigfeature_neg;
-    index_pos_neg = sigfeature_pos & sigfeature_neg;
-    index_any = sigfeature_pos | sigfeature_neg;
-
-
-    fprintf('Positive only peaks: %.0f\n', sum(index_pos_only) );
-    fprintf('Negative only peaks: %.0f\n', sum(index_neg_only) );
-    fprintf('Positive and Negative peaks: %.0f\n', sum(index_pos_neg) );
-    fprintf('Any peaks: %.0f\n', sum(index_any) );
-end
-
-
-if ( ~isfield(ccpairs,'pd_pos') && isfield(ccpairs,'peakdelay') )
-
-    pd_pos = [ccpairs.peakdelay];
-    hw_pos = [ccpairs.halfwidth];
-    sigfeature_pos = [ccpairs.significant];
-    sigfeature_pos = logical(sigfeature_pos);
-    ccc_pos = [ccpairs.ccc];
-    ccc_pos(ccc_pos < 0) = 0.0001;
-
-    pd_neg = zeros(size(sigfeature_pos)); 
-    hw_neg = zeros(size(sigfeature_pos));
-    ccc_neg = zeros(size(sigfeature_pos));
-
-    sigfeature_neg = false(size(sigfeature_pos));
-
-end
-
-data.sigPos = sigfeature_pos(:);
-data.sigNeg = sigfeature_neg(:);
-
-data.pdPos = pd_pos(:);
-data.hwPos = hw_pos(:);
-data.cccPos = ccc_pos(:);
-
-data.pdNeg = pd_neg(:);
-data.hwNeg = hw_neg(:);
-data.cccNeg = ccc_neg(:);
+data.pdNeg = pdNeg(:);
+data.hwNeg = hwNeg(:);
+data.cccNeg = cccNeg(:);
 
 return;
 

@@ -1,4 +1,4 @@
-function iresp = vs_plot_info_calc(resp)
+function iresp = iccp_plot_info_calc(resp)
 % NEEDS TO BE MODULARIZED
 %
 % info_calculation: Calculates information values and nmse values from an

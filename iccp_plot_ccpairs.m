@@ -7,7 +7,7 @@ function iccp_plot_ccpairs(ccpairs)
 %     neurons.
 
 
-close all;
+%close all;
 
 for i = 1:length(ccpairs)
 
@@ -38,11 +38,12 @@ for i = 1:length(ccpairs)
     figure;
     subplot(3,1,1);
     bar(delay, r12, 'k'); %, 'markerfacecolor', 'k', 'markersize', 2);
+    xlim([-20 20]);
     tickpref;
     box off;
     ylabel('Correlogram');
-    title(sprintf('%s site%.0f chan%.0f model %.0f/%.0f %s', ...
-        ccpairs(i).exp, ccpairs(i).site, ccpairs(i).chan, ...
+    title(sprintf('#%.0f: %s site%.0f chan%.0f model %.0f/%.0f %s', ...
+        i, ccpairs(i).exp, ccpairs(i).site, ccpairs(i).chan, ...
         ccpairs(i).model1(1), ccpairs(i).model2(1), ccpairs(i).stim));
 
 
@@ -60,6 +61,7 @@ for i = 1:length(ccpairs)
     plot([min(delay) max(delay)], [0 0], 'k-');
     plot([min(delay) max(delay)], [upper95qab upper95qab], 'r-');
     plot([min(delay) max(delay)], [lower95qab lower95qab], 'r-');
+    xlim([-20 20]);
     tickpref;
     box off;
     ylabel('Cross-Covariance');

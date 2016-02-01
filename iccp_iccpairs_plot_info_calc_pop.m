@@ -1,50 +1,33 @@
 function [rbarpop, dtpop, infopop, rbarpairs, dtpairs, infopairs] = ...
-   vs_iccpairs_plot_info_calc_pop(rbarpop, dtpop, infopop, rbarpairs, dtpairs, infopairs)
-% NEEDS TO BE MODULARIZED
+   iccp_iccpairs_plot_info_calc_pop(rbarpop, dtpop, infopop, rbarpairs, dtpairs, infopairs)
+% iccp_iccpairs_plot_info_calc_pop Information parameters for population data
 %
-% info_calculation: Calculates information values and nmse values from an
-% STRF response file. (saved as resp_final)
+% Tabulates and plots information calculations for pairwise ICC recordings.
 %
-% [info_nmse, sigma_nmse, nmse] = info_calculation(resp, graphs, popgraphs)
+% The call:
 %
-% Inputs:
-% -----------------------------
-% 1) resp: STRF response file, saved as -*final-resp. 
-% 2) graphs: boolean input. 1 if graphs are desired, 0 if not.
-% 3) popgraphs: boolean input. 1 if population graphs are desired, 0 if
-%       not.
+% [rbarpop, dtpop, infopop, rbarpairs, dtpairs, infopairs] =
+%       iccp_iccpairs_plot_info_calc_pop;
 %
-% Outputs:
-%   ----------------------------
-%   IF GRAPHS is 1 (plots are for each individual neuron):
+% reads data from '*-respcmbcmb-info.mat' files. Each file holds an iresp
+% struct, which holds the information calculations for a neuron. Once the
+% data is collected, it is plotted.
 %
-%   1) Generates a plot of Information vs. all the dt values.
-%   2) Generates a PSTH, raster plot, and image of the stimulus 
-%             spectrogram, using the value of dt where the I vs dt graph 
-%             becomes nonlinear.
-%   3) Plots all of its information values, divided into intervals of 
-%             width [[0.1 0.5 1 2 3 4 6 12], against log(1/those T values).
-%   4) Plots sigma against 1/sqrt(those T values).
+% The collected data is returned in output arguments.
 %
-%   IF POPGRAPHS is 1 (plots are for all the neurons)
-%     1) Plots the population histogram of normalized mean square error, 
-%             information, and picked dt values.
+% To skip the file processing, the previously outputted data may be used as
+% inputs to the function in a call:
 %
-%  Finally, performs pairwise analysis on information, sigma values, and
-%  generates scatterplots of those.
+% iccp_iccpairs_plot_info_calc_pop(rbarpop, dtpop, infopop, rbarpairs, dtpairs, infopairs)
+%
+% which will make the same plots.
 
-% Things to plot:
-% 1. Raster
-% 2. PSTH
-% 3. Information vs. time bin size
-% 4. Information vs. data set size for multiple estimates
-% 5. SD vs. data set size
 
 
 % If there's no inputs, then extract the data from files
 if ( nargin ~= 6 )
    [rbarpop, dtpop, infopop, rbarpairs, dtpairs, infopairs] = ...
-      vs_iccpairs_get_info_calc_pop_data;
+      iccp_get_info_calc_pop_data;
 end % if ( nargin )
 
 
@@ -55,24 +38,24 @@ figure;
 
 % Population histograms
 subplot(3,2,1);
-vs_iccpairs_plot_rbar_pop(rbarpop);
+iccp_plot_rbar_pop(rbarpop);
 
 subplot(3,2,3);
-vs_iccpairs_plot_dt_pop(dtpop);
+iccp_plot_dt_pop(dtpop);
 
 subplot(3,2,5);
-vs_iccpairs_plot_info_pop(infopop);
+iccp_plot_info_pop(infopop);
 
 
 % Population comparisons
 subplot(3,2,2);
-vs_iccpairs_plot_rbar_dt_pop(rbarpop, dtpop);
+iccp_plot_rbar_dt_pop(rbarpop, dtpop);
 
 subplot(3,2,4);
-vs_iccpairs_plot_rbar_info_pop(rbarpop, infopop);
+iccp_plot_rbar_info_pop(rbarpop, infopop);
 
 subplot(3,2,6);
-vs_iccpairs_plot_dt_info_pop(dtpop, infopop);
+iccp_plot_dt_info_pop(dtpop, infopop);
 
 % set(gcf,'position', [1070 118 438 539]);
 print_mfilename(mfilename);
@@ -84,25 +67,25 @@ close all;
 figure;
 
 subplot(3,1,1);
-vs_iccpairs_plot_rbar_pairs(rbarpairs);
+iccp_plot_rbar_pairs(rbarpairs);
 
 subplot(3,1,2);
-vs_iccpairs_plot_dt_pairs(dtpairs);
+iccp_plot_dt_pairs(dtpairs);
 
 subplot(3,1,3);
-vs_iccpairs_plot_info_pairs(infopairs);
+iccp_plot_info_pairs(infopairs);
 
 set(gcf,'position', [577 171 321 759]);
 print_mfilename(mfilename);
 
 % figure;
-% vs_iccpairs_plot_rbar_diff_pairs(rbarpairs);
+% iccp_plot_rbar_diff_pairs(rbarpairs);
 
 % figure;
-vs_iccpairs_plot_dt_diff_pairs(dtpairs);
+iccp_plot_dt_diff_pairs(dtpairs);
 
 figure;
-vs_iccpairs_plot_info_diff_pairs(infopairs);
+iccp_plot_info_diff_pairs(infopairs);
 
 
 
@@ -115,7 +98,7 @@ return;
 
 
 function [rbarpop, dtpop, infopop, rbarpairs, dtpairs, infopairs] = ...
-   vs_iccpairs_get_info_calc_pop_data
+   iccp_get_info_calc_pop_data
 
    d = dir('*-respcmbcmb-info.mat');
 
@@ -206,7 +189,7 @@ return;
 
 
 
-function vs_iccpairs_plot_rbar_pop(rbarpop)
+function iccp_plot_rbar_pop(rbarpop)
 
 hold on;
 edges = linspace(0,60,16);
@@ -236,7 +219,7 @@ return;
 
 
 
-function vs_iccpairs_plot_dt_pop(dtpop)
+function iccp_plot_dt_pop(dtpop)
 
 hold on;
 edges = linspace(0,0.030,16);
@@ -268,7 +251,7 @@ return;
 
 
 
-function vs_iccpairs_plot_info_pop(infopop)
+function iccp_plot_info_pop(infopop)
 
 hold on;
 edges = linspace(0,10,21);
@@ -299,7 +282,7 @@ return;
 
 
 
-function vs_iccpairs_plot_rbar_dt_pop(rbarpop, dtpop)
+function iccp_plot_rbar_dt_pop(rbarpop, dtpop)
 
 hold on;
 dtpop = 1000 * dtpop;
@@ -335,7 +318,7 @@ return;
 
 
 
-function vs_iccpairs_plot_rbar_info_pop(rbarpop, infopop)
+function iccp_plot_rbar_info_pop(rbarpop, infopop)
 
 hold on;
 
@@ -370,7 +353,7 @@ return;
 
 
 
-function vs_iccpairs_plot_dt_info_pop(dtpop, infopop)
+function iccp_plot_dt_info_pop(dtpop, infopop)
 
 hold on;
 dtpop = dtpop * 1000;
@@ -410,7 +393,7 @@ return;
 
 
 
-function vs_iccpairs_plot_rbar_diff_pairs(rbarpairs)
+function iccp_plot_rbar_diff_pairs(rbarpairs)
 
 
 xmin = [0.1 0.01 0.2];
@@ -523,7 +506,7 @@ return;
 
 
 
-function vs_iccpairs_plot_dt_diff_pairs(dtpairs)
+function iccp_plot_dt_diff_pairs(dtpairs)
 
 
 dtpairs = 1000 * dtpairs; % convert from seconds to ms
@@ -616,7 +599,7 @@ return;
 
 
 
-function vs_iccpairs_plot_info_diff_pairs(infopairs)
+function iccp_plot_info_diff_pairs(infopairs)
 
 
 edges = linspace(0,10,21);
@@ -708,9 +691,9 @@ return;
 
 
 
-function vs_iccpairs_plot_rbar_pairs(rbarpairs)
+function iccp_plot_rbar_pairs(rbarpairs)
 
-[larger, smaller] = vs_largersmaller(rbarpairs(:,1), rbarpairs(:,2));
+[larger, smaller] = iccp_largersmaller(rbarpairs(:,1), rbarpairs(:,2));
 % scatter(larger, smaller, 25, 'MarkerEdgeColor', 'black', 'MarkerFaceColor', [0.6 0.6 0.6])
 hold on;
 plot(larger, smaller, 'ko', 'markersize', 5);
@@ -751,10 +734,10 @@ return;
 
 
 
-function vs_iccpairs_plot_dt_pairs(dtpairs)
+function iccp_plot_dt_pairs(dtpairs)
 dtpairs = 1000 * dtpairs;
 
-[larger, smaller] = vs_largersmaller(dtpairs(:,1), dtpairs(:,2));
+[larger, smaller] = iccp_largersmaller(dtpairs(:,1), dtpairs(:,2));
 % scatter(larger, smaller, 25, 'MarkerEdgeColor', 'black', 'MarkerFaceColor', [0.6 0.6 0.6])
 hold on;
 plot(larger, smaller, 'ko', 'markersize', 5);
@@ -792,9 +775,9 @@ return;
 
 
 
-function vs_iccpairs_plot_info_pairs(infopairs)
+function iccp_plot_info_pairs(infopairs)
 
-[larger, smaller] = vs_largersmaller(infopairs(:,1), infopairs(:,2));
+[larger, smaller] = iccp_largersmaller(infopairs(:,1), infopairs(:,2));
 
 % scatter(larger, smaller, 25, 'MarkerEdgeColor', 'black', 'MarkerFaceColor', [0.6 0.6 0.6])
 hold on;

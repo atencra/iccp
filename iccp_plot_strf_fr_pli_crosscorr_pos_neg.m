@@ -42,7 +42,7 @@ data = iccp_get_ccc_fr_pli(ccpairs);
 
 iccp_plot_ccc_fr_pli_exc_excsup_peak(data);
 
-iccp_plot_ccc_fr_pli_exc_excsup_sup_peak(data);
+%iccp_plot_ccc_fr_pli_exc_excsup_sup_peak(data);
 
 
 if ( nargout == 1 )
@@ -59,69 +59,19 @@ return;
 function data = iccp_get_ccc_fr_pli(ccpairs)
 
 
-if ( isfield(ccpairs,'pd_pos') && isfield(ccpairs,'pd_neg') )
+[pdPos, hwPos, cccPos, pdNeg, hwNeg, cccNeg, sigPos, sigNeg] = ...
+    ccpairs_to_sigfeature(ccpairs);
 
-    pd_pos = [ccpairs.pd_pos];
-    hw_pos = [ccpairs.hw_pos];
-    sigfeature_pos = [ccpairs.sigfeature_pos];
-    sigfeature_pos = logical(sigfeature_pos);
-    ccc_pos = [ccpairs.ccc_pos];
-    ccc_pos(ccc_pos < 0) = 0.0001;
+data.sigPos = sigPos(:);
+data.sigNeg = sigNeg(:);
 
-    pd_neg = [ccpairs.pd_neg];
-    hw_neg = [ccpairs.hw_neg];
-    sigfeature_neg = [ccpairs.sigfeature_neg];
-    sigfeature_neg = logical(sigfeature_neg);
-    ccc_neg = [ccpairs.ccc_neg];
-    ccc_neg(ccc_neg < 0) = 0.0001;
+data.pdPos = pdPos(:);
+data.hwPos = hwPos(:);
+data.cccPos = cccPos(:);
 
-    % Possibilities:
-    % Positive only peaks
-    % Negative only peaks
-    % Both Positive and Negative peaks
-    % Any significant peak
-
-    index_pos_only = sigfeature_pos & ~sigfeature_neg;
-    index_neg_only = ~sigfeature_pos & sigfeature_neg;
-    index_pos_neg = sigfeature_pos & sigfeature_neg;
-    index_any = sigfeature_pos | sigfeature_neg;
-
-    fprintf('Positive only peaks: %.0f\n', sum(index_pos_only) );
-    fprintf('Negative only peaks: %.0f\n', sum(index_neg_only) );
-    fprintf('Positive and Negative peaks: %.0f\n', sum(index_pos_neg) );
-    fprintf('Any peaks: %.0f\n', sum(index_any) );
-
-end
-
-
-if ( ~isfield(ccpairs,'pd_pos') && isfield(ccpairs,'peakdelay') )
-
-    pd_pos = [ccpairs.peakdelay];
-    hw_pos = [ccpairs.halfwidth];
-    sigfeature_pos = [ccpairs.significant];
-    sigfeature_pos = logical(sigfeature_pos);
-    ccc_pos = [ccpairs.ccc];
-    ccc_pos(ccc_pos < 0) = 0.0001;
-
-    pd_neg = zeros(size(sigfeature_pos)); 
-    hw_neg = zeros(size(sigfeature_pos));
-    ccc_neg = zeros(size(sigfeature_pos));
-
-    sigfeature_neg = false(size(sigfeature_pos));
-
-end
-
-
-data.sigPos = sigfeature_pos(:);
-data.sigNeg = sigfeature_neg(:);
-
-data.pdPos = pd_pos(:);
-data.hwPos = hw_pos(:);
-data.cccPos = ccc_pos(:);
-
-data.pdNeg = pd_neg(:);
-data.hwNeg = hw_neg(:);
-data.cccNeg = ccc_neg(:);
+data.pdNeg = pdNeg(:);
+data.hwNeg = hwNeg(:);
+data.cccNeg = cccNeg(:);
 
 
 fr1 = [ccpairs.fr1];
@@ -324,7 +274,6 @@ ccpairs_fr = data.fr;
 ccpairs_pli = data.pli;
 ccpairs_si = data.spi;
 
-
 cccPos = data.cccPos;
 cccNeg = data.cccNeg;
 
@@ -381,10 +330,14 @@ if ( sum(indexNeg) )
 
 
         figure;
+
+        % Get data over population, for positive peaks, and negative peaks
         dataspktype = eval(['ccpairs_' datatype{i}]);
         dataspktype_pos = dataspktype(indexPos,:);
         dataspktype_pos_neg = dataspktype(indexPosNeg,:);
 
+
+        % Order data and take differences
         [larger,smaller] = iccp_largersmaller(dataspktype(:,1),dataspktype(:,2));
         datadiff = abs( larger - smaller );
 
@@ -397,6 +350,22 @@ if ( sum(indexNeg) )
         [larger_pos_neg,smaller_pos_neg] = ...
             iccp_largersmaller(dataspktype_pos_neg(:,1),dataspktype_pos_neg(:,2));
         datadiff_pos_neg = abs( larger_pos_neg - smaller_pos_neg );
+
+
+        % Make a random distribution, sample, compute paired differences,
+        % and plot.
+        dataUnq = unique(dataspktype);
+        indexRand = ceil(length(dataUnq) * rand(1,size(dataspktype,1)));
+        sampleRand1 = dataUnq(indexRand);
+
+        indexRand = ceil(length(dataUnq) * rand(1,size(dataspktype,1)));
+        sampleRand2 = dataUnq(indexRand);
+
+        [larger,smaller] = iccp_largersmaller(sampleRand1,sampleRand2);
+        datadiffRand = abs( larger - smaller );
+
+pval = ranksum(datadiffRand, datadiff_pos)
+pval = ranksum(datadiffRand, datadiff_pos_neg)
 
 
         subplot(3,1,1);
@@ -441,6 +410,17 @@ if ( sum(indexNeg) )
         hp = plot(edges{i}, pdf_pos_neg, 's-', 'markersize', markersize, 'markerfacecolor', cmap(3,:), 'markeredgecolor', cmap(3,:) );
         set(hp, 'color', cmap(3,:));
 
+%         n = histc(datadiffRand, edges{i});
+%         pdfRand = n ./ sum(n);
+%         hp = plot(edges{i}, pdfRand, 's-', 'markersize', markersize, 'markerfacecolor', 'k', 'markeredgecolor', 'k' );
+%         set(hp, 'color', 'k');
+
+        n = histc(datadiffRand, edges{i});
+        pdfRand = n ./ sum(n);
+        hp = plot(edges{i}, pdfRand, 'k-');
+        set(hp, 'color', 'k', 'linewidth', 2);
+
+
         hold on;
         box off;
         tickpref;
@@ -451,9 +431,8 @@ if ( sum(indexNeg) )
         ylim([0 ymaxdiff(i)]);
         ylabel('Proportion');
         xlabel(xlabel2{i});
-        legend('EP', 'EP+SP');
+        legend('EP', 'EP+SP', 'Rand');
         subplot_label(gca,'B');
-
 
 
         subplot(3,1,3);
@@ -497,10 +476,12 @@ if ( sum(indexNeg) )
        fprintf('r=%.4f, p = %.4f\n', r(2),p(2));
        fprintf('%s diff\n', datatype{i});
        x = datadiff(indexPos);
+
        fprintf('N=%.0f, MN=%.4f, SD=%.4f, SE=%.4f\n', ...
           length(x), mean(x), std(x), std(x)./sqrt(length(x)));
        fprintf('MD=%.4f, MAD=%.4f, MX=%.4f\n', ...
-          median(datadiff), mad(datadiff), max(datadiff));
+          median(datadiff), mad(datadiff,1), max(datadiff));
+
        x = datadiff(indexPos);
        y = cccPos(indexPos);
        [r,p] = corrcoef(x(:), log10(y(:)));

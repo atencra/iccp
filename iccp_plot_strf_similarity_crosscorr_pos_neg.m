@@ -33,15 +33,24 @@ narginchk(1,1);
 
 data = iccp_get_ccc_strf_similarity(ccpairs);
 
-iccp_plot_ccc_strf_similarity_exc_peak(data);
+[sigPosOnly, sigPosNeg, sigNegOnly] = iccp_ccpairs_sigfeature_index(ccpairs);
 
-iccp_plot_ccc_strf_similarity_exc_excsup_peak(data);
-
-iccp_plot_ccc_strf_similarity_exc_excsup_sup_peak(data);
+iccp_ccpairs_crosscorr_strf_si_stats(ccpairs, sigPosOnly, sigPosNeg, sigNegOnly);
 
 
+% Plots with only a positive cross-cov peak
+%iccp_plot_ccc_strf_similarity_exc_peak(data);
 
-% iccp_ccc_strf_similarity_stats(data);
+
+% Plots with a positive and a positive/negative peak - publication figure.
+%iccp_plot_ccc_strf_similarity_exc_excsup_peak(data);
+
+
+% Plots with a positive peak, a positive/negative peak, and a negative peak
+%iccp_plot_ccc_strf_similarity_exc_excsup_sup_peak(data);
+
+
+%iccp_ccc_strf_similarity_stats(data);
 
 
 if nargout == 1
@@ -61,72 +70,22 @@ return;
 
 function data = iccp_get_ccc_strf_similarity(ccpairs)
 
-if ( isfield(ccpairs,'pd_pos') && isfield(ccpairs,'pd_neg') )
 
-    pd_pos = [ccpairs.pd_pos];
-    hw_pos = [ccpairs.hw_pos];
-    sigfeature_pos = [ccpairs.sigfeature_pos];
-    sigfeature_pos = logical(sigfeature_pos);
-    ccc_pos = [ccpairs.ccc_pos];
-    ccc_pos(ccc_pos < 0) = 0.0001;
+[pdPos, hwPos, cccPos, pdNeg, hwNeg, cccNeg, sigPos, sigNeg] = ...
+    ccpairs_to_sigfeature(ccpairs);
 
-    pd_neg = [ccpairs.pd_neg];
-    hw_neg = [ccpairs.hw_neg];
-    sigfeature_neg = [ccpairs.sigfeature_neg];
-    sigfeature_neg = logical(sigfeature_neg);
-    ccc_neg = [ccpairs.ccc_neg];
-    ccc_neg(ccc_neg < 0) = 0.0001;
+si = [ccpairs.strfsimilarity];
 
-    % Possibilities:
-    % Positive only peaks
-    % Negative only peaks
-    % Both Positive and Negative peaks
-    % Any significant peak
+data.sigPos = sigPos(:);
+data.sigNeg = sigNeg(:);
 
-    index_pos_only = sigfeature_pos & ~sigfeature_neg;
-    index_neg_only = ~sigfeature_pos & sigfeature_neg;
-    index_pos_neg = sigfeature_pos & sigfeature_neg;
-    index_any = sigfeature_pos | sigfeature_neg;
+data.pdPos = pdPos(:);
+data.hwPos = hwPos(:);
+data.cccPos = cccPos(:);
 
-    fprintf('Positive only peaks: %.0f\n', sum(index_pos_only) );
-    fprintf('Negative only peaks: %.0f\n', sum(index_neg_only) );
-    fprintf('Positive and Negative peaks: %.0f\n', sum(index_pos_neg) );
-    fprintf('Any peaks: %.0f\n', sum(index_any) );
-
-    si = [ccpairs.strfsimilarity];
-
-end
-
-
-if ( ~isfield(ccpairs,'pd_pos') && isfield(ccpairs,'peakdelay') )
-
-    pd_pos = [ccpairs.peakdelay];
-    hw_pos = [ccpairs.halfwidth];
-    sigfeature_pos = [ccpairs.significant];
-    sigfeature_pos = logical(sigfeature_pos);
-    ccc_pos = [ccpairs.ccc];
-    ccc_pos(ccc_pos < 0) = 0.0001;
-
-    pd_neg = zeros(size(sigfeature_pos)); 
-    hw_neg = zeros(size(sigfeature_pos));
-    ccc_neg = zeros(size(sigfeature_pos));
-
-    sigfeature_neg = false(size(sigfeature_pos));
-
-    si = [ccpairs.strfsimilarity];
-
-end
-
-data.sigPos = sigfeature_pos(:);
-data.sigNeg = sigfeature_neg(:);
-
-data.pdPos = pd_pos(:);
-data.hwPos = hw_pos(:);
-data.cccPos = ccc_pos(:);
-
-data.pdNeg = pd_neg(:);
-data.hwNeg = hw_neg(:);
-data.cccNeg = ccc_neg(:);
+data.pdNeg = pdNeg(:);
+data.hwNeg = hwNeg(:);
+data.cccNeg = cccNeg(:);
 
 data.si = si(:);
 
@@ -226,7 +185,6 @@ return;
 
 
 
-
 function iccp_plot_ccc_strf_similarity_exc_excsup_peak(data)
 
 cccPos = data.cccPos;
@@ -312,14 +270,16 @@ if ( sum(indexNeg) )
     hold on;
 
     plot(siPosSig, cccPosSig, 's', ...
-    'color', cmap(1,:), ...
-    'markersize', markersize, 'markerfacecolor', cmap(1,:), ...
-    'markeredgecolor', cmap(1,:));
+        'color', cmap(1,:), ...
+        'markersize', markersize, ...
+        'markerfacecolor', cmap(1,:), ...
+        'markeredgecolor', cmap(1,:));
 
     plot(siNegSig, cccNegSig, 's', ...
-    'color', cmap(3,:), ...
-    'markersize', markersize, 'markerfacecolor', cmap(3,:), ...
-    'markeredgecolor', cmap(3,:));
+        'color', cmap(3,:), ...
+        'markersize', markersize, ...
+        'markerfacecolor', cmap(3,:), ...
+        'markeredgecolor', cmap(3,:));
 
     ytick = [0.0001 0.001 0.01 0.1 1];
     xtick = [0:0.2:1];
@@ -460,8 +420,13 @@ return;
 
 
 
-
 function iccp_ccc_strf_similarity_stats(data)
+
+si = data.si;
+sigPos = data.sigPos;
+sigNeg = data.sigNeg;
+cccPos = data.cccPos;
+cccNeg = data.cccNeg;
 
 fprintf('\n');
 fprintf('STRF Similarity population\n');
@@ -479,26 +444,24 @@ ccpairs_sd = std(si);
 ccpairs_se = ccpairs_sd / sqrt(length(si));
 
 
-
-
-[r,p] = corrcoef(si(sigfeature_pos), log10(ccc_pos(sigfeature_pos)) );
+[r,p] = corrcoef(si(sigPos), log10(cccPos(sigPos)) );
 fprintf('\nCCPairs: log10 Pos CCC vs. SI: r = %.3f, p = %.3f\n', r(1,2), p(1,2));
 
-[r,p] = corrcoef(log10(abs( si(sigfeature_pos) )), log10(abs(ccc_pos(sigfeature_pos) )));
+[r,p] = corrcoef(log10(abs( si(sigPos) )), log10(abs(cccPos(sigPos) )));
 fprintf('CCPairs: log10 Pos CCC vs. log10 SI: r = %.3f, p = %.3f\n', r(1,2), p(1,2));
 
-[r,p] = corrcoef(si(sigfeature_pos), log10(ccc_pos(sigfeature_pos) ));
+[r,p] = corrcoef(si(sigPos), log10(cccPos(sigPos) ));
 fprintf('CCPairs: log10 Pos CCC vs. SI: r = %.3f, p = %.3f\n', r(1,2), p(1,2));
 
 fprintf('\n\n');
 
-[r,p] = corrcoef(si(sigfeature_neg), log10(ccc_neg(sigfeature_neg)) );
+[r,p] = corrcoef(si(sigNeg), log10(cccNeg(sigNeg)) );
 fprintf('\nCCPairs: log10 Neg CCC vs. SI: r = %.3f, p = %.3f\n', r(1,2), p(1,2));
 
-[r,p] = corrcoef(log10(abs( si(sigfeature_neg) )), log10(abs(ccc_neg(sigfeature_neg) )));
+[r,p] = corrcoef(log10(abs( si(sigNeg) )), log10(abs(cccNeg(sigNeg) )));
 fprintf('CCPairs: log10 Neg CCC vs. log10 SI: r = %.3f, p = %.3f\n', r(1,2), p(1,2));
 
-[r,p] = corrcoef(si(sigfeature_neg), log10(ccc_neg(sigfeature_neg) ));
+[r,p] = corrcoef(si(sigNeg), log10(cccNeg(sigNeg) ));
 fprintf('CCPairs: log10 Neg CCC vs. SI: r = %.3f, p = %.3f\n', r(1,2), p(1,2));
 
 
@@ -509,6 +472,295 @@ fprintf('CCPairs: log10 Neg CCC vs. SI: r = %.3f, p = %.3f\n', r(1,2), p(1,2));
 
 
 return;
+
+
+
+
+
+
+function [sigPosOnly, sigPosNeg, sigNegOnly] = iccp_ccpairs_sigfeature_index(ccpairs)
+
+
+pdPos = [ccpairs.pd_pos];
+pdPos = abs(pdPos);
+
+sigPos = [ccpairs.sigfeature_pos];
+sigPos = logical(sigPos);
+
+
+if ( isfield(ccpairs,'pd_pos') && isfield(ccpairs,'pd_neg') )
+    pdNeg = [ccpairs.pd_neg];
+    pdNeg = abs(pdNeg);
+
+    sigNeg = [ccpairs.sigfeature_neg];
+
+    sigPosOnly = sigPos & ~sigNeg;
+
+    sigNeg0 = logical(sigNeg & pdNeg > 0); % for positive/negative cross-cov
+    sigNeg15 = logical(sigNeg & pdNeg > 1.5); % for negative only cross-cov
+
+    sigNegOnly = ~sigPos & sigNeg15;
+    sigPosNeg = sigPos & sigNeg0;
+
+    fprintf('\n');
+    fprintf('Positive only peaks: %.0f\n', sum(sigPosOnly) );
+    fprintf('Negative only peaks: %.0f\n', sum(sigNegOnly) );
+    fprintf('Positive and Negative peaks: %.0f\n', sum(sigPosNeg) );
+    fprintf('Any peaks: %.0f\n', sum([sigPosOnly(:); sigNegOnly(:); sigPosNeg(:)]) );
+    fprintf('\n');
+end
+
+
+if ( ~isfield(ccpairs,'pd_pos') && isfield(ccpairs,'peakdelay') )
+    sigPosOnly = sigPos;
+    sigNegOnly = false(size(sigPos));
+    sigPosNeg = false(size(sigPosNeg));
+end
+
+return;
+
+
+
+
+function iccp_ccpairs_crosscorr_strf_si_stats(ccpairs, sigPosOnly, sigPosNeg, sigNegOnly)
+
+
+% Any cross-cov function that had a positive peak
+sigPos = [ccpairs.sigfeature_pos];
+sigPos = logical(sigPos);
+
+% Any cross-cov function that had a positive peak
+sigNeg = [ccpairs.sigfeature_neg];
+sigNeg = logical(sigNeg);
+
+
+% Positive peaks
+pdPos = [ccpairs.pd_pos];
+pdPos = abs(pdPos);
+
+hwPos = [ccpairs.hw_pos];
+
+cccPos = [ccpairs.ccc_pos];
+cccPos(cccPos < 0) = 0.0001;
+
+
+% Negative peaks
+pdNeg = [ccpairs.pd_neg];
+pdNeg = abs(pdNeg);
+
+hwNeg = [ccpairs.hw_neg];
+
+cccNeg = [ccpairs.ccc_neg];
+cccNeg(cccNeg < 0) = 0.0001;
+
+
+si = [ccpairs.strfsimilarity];
+
+[length(cccPos) length(cccNeg) length(si)]
+
+
+fprintf('\n');
+fprintf('STRF Similarity population\n');
+fprintf('N = %.0f\n', length(si));
+fprintf('MN = %.4f\n', mean(si(~isnan(si))));
+fprintf('SD = %.4f\n', std(si(~isnan(si) ) ) );
+fprintf('MD = %.4f\n', median(si(~isnan(si))));
+fprintf('MAD = %.4f\n', madstat(si(~isnan(si))));
+fprintf('MX = %.4f\n', max(si(~isnan(si))) );
+
+
+fprintf('\n');
+fprintf('STRF Similarity: Pos Only\n');
+siPos = si(sigPosOnly);
+fprintf('N = %.0f\n', length(siPos));
+fprintf('MN = %.4f\n', mean(siPos));
+fprintf('SD = %.4f\n', std(siPos));
+fprintf('MD = %.4f\n', median(siPos));
+fprintf('MAD = %.4f\n', madstat(siPos));
+fprintf('MX = %.4f\n', max(siPos));
+
+
+fprintf('\n');
+fprintf('STRF Similarity: Pos Neg Only\n');
+siPosNeg = si(sigPosNeg);
+fprintf('N = %.0f\n', length(siPosNeg));
+fprintf('MN = %.4f\n', mean(siPosNeg));
+fprintf('SD = %.4f\n', std(siPosNeg));
+fprintf('MD = %.4f\n', median(siPosNeg));
+fprintf('MAD = %.4f\n', madstat(siPosNeg));
+fprintf('MX = %.4f\n', max(siPosNeg));
+
+
+fprintf('\n');
+fprintf('STRF Similarity: Neg Only\n');
+siNeg = si(sigNegOnly);
+fprintf('N = %.0f\n', length(siNeg));
+fprintf('MN = %.4f\n', mean(siNeg));
+fprintf('SD = %.4f\n', std(siNeg));
+fprintf('MD = %.4f\n', median(siNeg));
+fprintf('MAD = %.4f\n', madstat(siNeg));
+fprintf('MX = %.4f\n', max(siNeg));
+
+
+
+pPos_vs_PosNeg = ranksum(siPos, siPosNeg);
+pPos_vs_Neg = ranksum(siPos, siNeg);
+pPosNeg_vs_Neg = ranksum(siPosNeg, siNeg);
+
+fprintf('\n');
+fprintf('SI: Pos vs PosNeg: p = %.4f\n', pPos_vs_PosNeg);
+fprintf('SI: Pos vs Neg: p = %.4f\n', pPos_vs_Neg);
+fprintf('SI: PosNeg vs Neg: p = %.4f\n', pPosNeg_vs_Neg);
+fprintf('\n');
+
+
+fprintf('\n');
+
+[r,p] = corrcoef(si(sigPosOnly), log10(cccPos(sigPosOnly)) );
+fprintf('\nCCPairs: log10 Pos Only CCC vs. SI: r = %.3f, p = %.3f\n', r(1,2), p(1,2));
+
+[r,p] = corrcoef(log10(abs( si(sigPosOnly) )), log10(abs(cccPos(sigPosOnly) )));
+fprintf('CCPairs: log10 Pos Only CCC vs. log10 SI: r = %.3f, p = %.3f\n', r(1,2), p(1,2));
+
+[r,p] = corrcoef(si(sigPosOnly), log10(cccPos(sigPosOnly) ));
+fprintf('CCPairs: log10 Pos Only CCC vs. SI: r = %.3f, p = %.3f\n', r(1,2), p(1,2));
+
+fprintf('\n');
+
+[r,p] = corrcoef(si(sigPosNeg), log10(cccNeg(sigPosNeg)) );
+fprintf('\nCCPairs: log10 Pos Neg CCC vs. SI: r = %.3f, p = %.3f\n', r(1,2), p(1,2));
+
+[r,p] = corrcoef(log10(abs( si(sigPosNeg) )), log10(abs(cccNeg(sigPosNeg) )));
+fprintf('CCPairs: log10 Pos Neg CCC vs. log10 SI: r = %.3f, p = %.3f\n', r(1,2), p(1,2));
+
+[r,p] = corrcoef(si(sigPosNeg), log10(cccNeg(sigPosNeg) ));
+fprintf('CCPairs: log10 Pos Neg CCC vs. SI: r = %.3f, p = %.3f\n', r(1,2), p(1,2));
+
+
+fprintf('\n\n');
+
+
+
+
+
+
+
+% cccPos = data.cccPos;
+% cccNeg = data.cccNeg;
+% si = data.si;
+% 
+% indexPos = data.sigPos;
+% indexNeg = data.sigNeg;
+% indexPosNeg = indexPos & indexNeg;
+% 
+% cccPosSig = cccPos(indexPos);
+% cccNegSig = cccNeg(indexNeg);
+% 
+% siPosSig = si(indexPos);
+% siNegSig = si(indexNeg);
+% siPosNegSig = si(indexPosNeg);
+% 
+% 
+% markersize = 4;
+% 
+% 
+% 
+% if ( sum(indexNeg) )
+% 
+%     figure;
+% 
+%     subplot(2,1,1);
+% 
+%     cmap = brewmaps('blues', 4);
+%     cmap = cmap(1:3,:);
+% 
+%     hold on;
+% 
+%     edges_si = 0:0.05:1;
+%     n = histc(siPosSig, edges_si);
+%     pdf_pos = n ./ sum(n);
+%     hp = plot(edges_si(1:end-1), pdf_pos(1:end-1), 's-', ...
+%     'markersize', markersize, ...
+%     'markerfacecolor', cmap(1,:), ...
+%     'markeredgecolor', cmap(1,:) );
+%     set(hp, 'color', cmap(1,:));
+% 
+%     n = histc(siPosNegSig, edges_si);
+%     pdf_pos_neg = n ./ sum(n);
+%     hp = plot(edges_si(1:end-1), smooth3p(pdf_pos_neg(1:end-1)), 's-', ...
+%     'markersize', markersize, ...
+%     'markerfacecolor', cmap(3,:), ...
+%     'markeredgecolor', cmap(3,:) );
+%     set(hp, 'color', cmap(3,:));
+%     edges_si = 0:0.05:1;
+% 
+% 
+%     box off;
+%     tickpref;
+%     xtick = edges_si(1:2:end);
+%     ytick = 0:0.05:0.15; 
+%     ymax = 1;
+%     xtick = 0:0.2:1;
+%     set(gca,'xtick', xtick, 'xticklabel', xtick);
+%     set(gca,'ytick', ytick, 'yticklabel', ytick);
+%     range = max(edges_si) - min(edges_si);
+%     xlim([min(edges_si) max(edges_si)]);
+%     ylim([0 0.16]);
+%     ylabel('Proportion');
+%     xlabel('STRF Similarity');
+%     legend('EP', 'EP+SP');
+%     box off;
+%     tickpref;
+%     subplot_label(gca,'A');
+% 
+%     ht = title(mfilename);
+%     set(ht, 'interpreter', 'none');
+% 
+% 
+% 
+% 
+%     subplot(2,1,2);
+% 
+%     cmap = brewmaps('greens', 4);
+%     cmap = cmap(1:3,:);
+% 
+% 
+%     hold on;
+% 
+%     plot(siPosSig, cccPosSig, 's', ...
+%         'color', cmap(1,:), ...
+%         'markersize', markersize, ...
+%         'markerfacecolor', cmap(1,:), ...
+%         'markeredgecolor', cmap(1,:));
+% 
+%     plot(siNegSig, cccNegSig, 's', ...
+%         'color', cmap(3,:), ...
+%         'markersize', markersize, ...
+%         'markerfacecolor', cmap(3,:), ...
+%         'markeredgecolor', cmap(3,:));
+% 
+%     ytick = [0.0001 0.001 0.01 0.1 1];
+%     xtick = [0:0.2:1];
+%     set(gca,'xtick', xtick, 'xticklabel', xtick);
+%     set(gca,'ytick', ytick, 'yticklabel', ytick);
+%     set(gca,'yscale', 'log');
+%     xlabel('STRF Similarity');
+%     ylabel('Cross Correlation Coefficient');
+%     legend('EP', 'SP');
+%     tickpref;
+%     axis([0 1 0.001 1]);
+%     subplot_label(gca,'B');
+% 
+%     set(gcf,'position', [1181 457 321 454]);
+% 
+% end
+
+
+
+
+
+return;
+
 
 
 

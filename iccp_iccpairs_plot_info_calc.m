@@ -1,4 +1,4 @@
-function vs_iccpairs_plot_info_calc(iresp)
+function iccp_iccpairs_plot_info_calc(iresp)
 % NEEDS TO BE MODULARIZED
 %
 % info_calculation: Calculates information values and nmse values from an
