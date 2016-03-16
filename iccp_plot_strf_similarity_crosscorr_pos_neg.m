@@ -43,7 +43,7 @@ iccp_ccpairs_crosscorr_strf_si_stats(ccpairs, sigPosOnly, sigPosNeg, sigNegOnly)
 
 
 % Plots with a positive and a positive/negative peak - publication figure.
-%iccp_plot_ccc_strf_similarity_exc_excsup_peak(data);
+iccp_plot_ccc_strf_similarity_exc_excsup_peak(data);
 
 
 % Plots with a positive peak, a positive/negative peak, and a negative peak
@@ -206,35 +206,32 @@ siPosNegSig = si(indexPosNeg);
 markersize = 4;
 
 
-
 if ( sum(indexNeg) )
 
     figure;
 
     subplot(2,1,1);
 
-    cmap = brewmaps('blues', 4);
-    cmap = cmap(1:3,:);
-
     hold on;
 
     edges_si = 0:0.05:1;
+
     n = histc(siPosSig, edges_si);
     pdf_pos = n ./ sum(n);
-    hp = plot(edges_si(1:end-1), pdf_pos(1:end-1), 's-', ...
+    hp = plot(edges_si(1:end-1), pdf_pos(1:end-1), 'ko-', ...
     'markersize', markersize, ...
-    'markerfacecolor', cmap(1,:), ...
-    'markeredgecolor', cmap(1,:) );
-    set(hp, 'color', cmap(1,:));
+    'markerfacecolor', 'k', ...
+    'markeredgecolor', 'k' );
+    set(hp, 'color', 'k');
 
     n = histc(siPosNegSig, edges_si);
     pdf_pos_neg = n ./ sum(n);
     hp = plot(edges_si(1:end-1), smooth3p(pdf_pos_neg(1:end-1)), 's-', ...
     'markersize', markersize, ...
-    'markerfacecolor', cmap(3,:), ...
-    'markeredgecolor', cmap(3,:) );
-    set(hp, 'color', cmap(3,:));
-    edges_si = 0:0.05:1;
+    'markerfacecolor', 0.6*ones(1,3), ...
+    'markeredgecolor', 0.3*ones(1,3) );
+    set(hp, 'color', 0.6*ones(1,3));
+
 
 
     box off;
@@ -263,23 +260,22 @@ if ( sum(indexNeg) )
 
     subplot(2,1,2);
 
-    cmap = brewmaps('greens', 4);
-    cmap = cmap(1:3,:);
-
-
     hold on;
 
-    plot(siPosSig, cccPosSig, 's', ...
-        'color', cmap(1,:), ...
+    plot(siPosSig, cccPosSig, 'o', ...
+        'color', 'k', ...
         'markersize', markersize, ...
-        'markerfacecolor', cmap(1,:), ...
-        'markeredgecolor', cmap(1,:));
+        'markeredgecolor', 'k');
+%        'markerfacecolor', 'k', ...
+%        'markeredgecolor', 'k');
 
     plot(siNegSig, cccNegSig, 's', ...
-        'color', cmap(3,:), ...
+        'color', 0.6*ones(1,3), ...
         'markersize', markersize, ...
-        'markerfacecolor', cmap(3,:), ...
-        'markeredgecolor', cmap(3,:));
+        'markerfacecolor', 0.6*ones(1,3), ...
+       'markeredgecolor', 0.3*ones(1,3));
+
+
 
     ytick = [0.0001 0.001 0.01 0.1 1];
     xtick = [0:0.2:1];

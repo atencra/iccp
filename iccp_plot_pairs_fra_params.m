@@ -40,9 +40,11 @@ close all;
 % vs_plot_pairs_fra_cf_scatter_hist(cf);
 
 
+
 % vs_plot_pairs_fra_bw_scatter_hist(bw);
 
 % vs_plot_pairs_fra_bw_diff_rand(bw);
+
 
 
 vs_plot_pairs_fra_q_scatter_hist(Q);
@@ -240,10 +242,22 @@ subplot(1,2,1);
 hold on
 axis([0.2 32 0.2 32])
 plot(xlim, ylim, 'k-');
+
+
 [larger, smaller] = iccp_largersmaller(cf(:,1), cf(:,2));
-scatter(larger,smaller,10, 'MarkerEdgeColor', 'black', 'MarkerFaceColor', [0.6 0.6 0.6])
-tickpref
-box off
+
+[absc, ord] = iccp_randomize_columns(cf(:,1), cf(:,2));
+
+
+hold on;
+
+%scatter(larger,smaller, 10, 'MarkerEdgeColor', 'black', 'MarkerFaceColor', [0.6 0.6 0.6]);
+
+scatter(absc, ord, 10, 'MarkerEdgeColor', 'black'); %, 'MarkerFaceColor', [0.8 0.8 0.8]);
+
+
+tickpref;
+box off;
 xlabel('CF (kHz) Neuron 1')
 ylabel('CF (kHz) Neuron 2')
 set(gca,'xtick', cftick, 'xticklabel', cftick);
@@ -278,12 +292,30 @@ fprintf('CF Difference (oct)\n');
 fprintf('MN = %.4f, SD = %.4f, SE = %.4f, MD = %.4f, MAD = %.4f, n = %.0f\n',...
    dstats.mn, dstats.sd, dstats.se, dstats.md, dstats.mad, length(cf(:,1)) );
 
+
+
+logtransform = 1;
+[rpop_med, rpop_ci, pval] = ...
+    iccp_pairwise_corr_rand_test(cf(:,1), cf(:,2), logtransform);
+
+fprintf('\n');
+fprintf('CF pairs - randomized\n');
+fprintf('Pairwise Randomization: r=%.4f,p=%.4f\n', rpop_med,pval);
+fprintf('Confidence Intervals: [%.4f, %.4f]\n', rpop_ci(1), rpop_ci(2));
+
+fprintf('\n\n');
+
+
+
+
 return;
 
 
 
 
 function vs_plot_pairs_fra_bw_scatter_hist(bw)
+
+
 
 for i = 1:4
    data = [bw(:,i) bw(:,i+4)];
@@ -316,12 +348,20 @@ for i = 1:4
     xlim([minmin maxmax]);
     ylim([minmin maxmax]);
     plot(xlim, ylim, 'k-');
+
     [larger, smaller] = iccp_largersmaller(bwdata{i}(:,1),bwdata{i}(:,2));
-    plot(larger,smaller, 'ko', ...
+
+    [absc, ord] = iccp_randomize_columns(bwdata{i}(:,1),bwdata{i}(:,2));
+
+%     plot(larger,smaller, 'ko', ...
+%         'MarkerEdgeColor', 'black', ...
+%         'MarkerSize', 2);
+
+
+    plot(absc, ord, 'ko', ...
         'MarkerEdgeColor', 'black', ...
         'MarkerSize', 2);
-%        'MarkerFaceColor', [0.6 0.6 0.6], ...
-%        'MarkerSize', 3)
+
 
     xlim([minmin maxmax])
     ylim([minmin maxmax])
@@ -361,7 +401,18 @@ for i = 1:4
     fprintf('\n');
 
 
+
+    logtransform = 0;
+    [rpop_med, rpop_ci, pval] = ...
+        iccp_pairwise_corr_rand_test(bwdata{i}(:,1), bwdata{i}(:,2), logtransform);
+    fprintf('\n');
+    fprintf(sprintf('%s pairs - randomized\n',label{i}));
+    fprintf('Pairwise Randomization: r=%.4f,p=%.4f\n', rpop_med,pval);
+    fprintf('Confidence Intervals: [%.4f, %.4f]\n', rpop_ci(1), rpop_ci(2));
+    fprintf('\n\n');
+
 end % (for i)
+
 
 set(gcf,'Position',[400 100 321 551])
 print_mfilename(mfilename);
@@ -532,11 +583,22 @@ for i = 1:4
    xlim([minmin maxmax]);
    ylim([minmin maxmax]);
    plot(xlim, ylim, 'k-');
-   [larger, smaller] = iccp_largersmaller(qdata{i}(:,1),qdata{i}(:,2));
 
-    plot(larger,smaller, 'ko', ...
+%    [larger, smaller] = iccp_largersmaller(qdata{i}(:,1),qdata{i}(:,2));
+% 
+%     plot(larger,smaller, 'ko', ...
+%         'MarkerEdgeColor', 'black', ...
+%         'MarkerSize', 2);
+
+
+    [absc, ord] = iccp_randomize_columns(qdata{i}(:,1),qdata{i}(:,2));
+
+    plot(absc, ord, 'ko', ...
         'MarkerEdgeColor', 'black', ...
         'MarkerSize', 2);
+
+
+
 
    xlim([minmin maxmax])
    ylim([minmin maxmax])
@@ -562,18 +624,26 @@ for i = 1:4
    box off
 
 
-   fprintf('\n%s\n',label{i});
-   [r,p] = corrcoef(larger, smaller);
-   fprintf('r = %.4f, p = %.4f\n', r(2), p(2) );
+%    fprintf('\n%s\n',label{i});
+%    [r,p] = corrcoef(larger, smaller);
+%    fprintf('r = %.4f, p = %.4f\n', r(2), p(2) );
+% 
+%    dstats = simple_stats(datadiff);
+% 
+%    fprintf('\n');
+%    fprintf('MN = %.4f, SD = %.4f, SE = %.4f, MD = %.4f, MAD = %.4f, n = %.0f\n',...
+%       dstats.mn, dstats.sd, dstats.se, dstats.md, dstats.mad, length(datadiff) );
+%    fprintf('\n');
 
-   dstats = simple_stats(datadiff);
 
-   fprintf('\n');
-   fprintf('MN = %.4f, SD = %.4f, SE = %.4f, MD = %.4f, MAD = %.4f, n = %.0f\n',...
-      dstats.mn, dstats.sd, dstats.se, dstats.md, dstats.mad, length(datadiff) );
-   fprintf('\n');
-
-
+    logtransform = 0;
+    [rpop_med, rpop_ci, pval] = ...
+        iccp_pairwise_corr_rand_test(qdata{i}(:,1), qdata{i}(:,2), logtransform);
+    fprintf('\n');
+    fprintf(sprintf('%s pairs - randomized\n',label{i}));
+    fprintf('Pairwise Randomization: r=%.4f,p=%.4f\n', rpop_med,pval);
+    fprintf('Confidence Intervals: [%.4f, %.4f]\n', rpop_ci(1), rpop_ci(2));
+    fprintf('\n\n');
 
 end % (for i)
 

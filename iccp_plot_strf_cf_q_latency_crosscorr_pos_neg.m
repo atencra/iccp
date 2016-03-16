@@ -323,6 +323,7 @@ if ( sum(indexNeg) )
         [larger_pos_neg,smaller_pos_neg] = ...
             iccp_largersmaller(dataspktype_pos_neg(:,1),dataspktype_pos_neg(:,2));
 
+
         % Make a random distribution, sample, compute paired differences,
         % and plot.
         dataUnq = unique(dataspktype);
@@ -332,6 +333,12 @@ if ( sum(indexNeg) )
         sampleRand2 = dataUnq(indexRand);
         [largerRand,smallerRand] = iccp_largersmaller(sampleRand1,sampleRand2);
 
+
+        [absc_pos, ord_pos] = ...
+            iccp_randomize_columns(dataspktype_pos(:,1),dataspktype_pos(:,2));
+
+        [absc_pos_neg, ord_pos_neg] = ...
+            iccp_randomize_columns(dataspktype_pos_neg(:,1),dataspktype_pos_neg(:,2));
 
 
         if ( strcmp(datatype{i}, 'cf') )
@@ -352,25 +359,69 @@ if ( sum(indexNeg) )
             datadiffRand = abs( log2( largerRand ./ smallerRand ) );
         end
 
+
+
+        logtransform = 1;
+        [rpop_med, rpop_ci, pval] = ...
+            iccp_pairwise_corr_rand_test(absc_pos, ord_pos, logtransform);
+        fprintf('\n');
+        fprintf(sprintf('%s Pos pairs - randomized\n', xlabelScatter{i}));
+        fprintf('Pairwise Randomization: r=%.4f,p=%.4f\n', rpop_med,pval);
+        fprintf('Confidence Intervals: [%.4f, %.4f]\n', rpop_ci(1), rpop_ci(2));
+        fprintf('\n\n');
+
+
+        logtransform = 1;
+        [rpop_med, rpop_ci, pval] = ...
+            iccp_pairwise_corr_rand_test(absc_pos_neg, ord_pos_neg, logtransform);
+        fprintf('\n');
+        fprintf(sprintf('%s Pos-Neg pairs - randomized\n',xlabelScatter{i}));
+        fprintf('Pairwise Randomization: r=%.4f,p=%.4f\n', rpop_med,pval);
+        fprintf('Confidence Intervals: [%.4f, %.4f]\n', rpop_ci(1), rpop_ci(2));
+        fprintf('\n\n');
+
+
 pval = ranksum(datadiffRand, datadiff_pos)
 pval = ranksum(datadiffRand, datadiff_pos_neg)
 
 
+
+
+
         subplot(3,2,(i-1)*2+1);
-        markersize = 2;
+        markersize = 3;
         hold on;
         plot([xaxScatter{i}], [yaxScatter{i}], 'k-');
 
         cmap = brewmaps('blues', 4);
         cmap = cmap(1:3,:);
 
-        plot(larger_pos, smaller_pos, 's', 'color', cmap(1,:), ...
-            'markersize', markersize, 'markerfacecolor', cmap(1,:), ...
-            'markeredgecolor', cmap(1,:));
+%         plot(larger_pos, smaller_pos, 's', 'color', cmap(1,:), ...
+%             'markersize', markersize, 'markerfacecolor', cmap(1,:), ...
+%             'markeredgecolor', cmap(1,:));
+% 
+%         plot(larger_pos_neg, smaller_pos_neg, 's', 'color', cmap(3,:), ...
+%             'markersize', markersize, 'markerfacecolor', cmap(3,:), ...
+%             'markeredgecolor', cmap(3,:));
 
-        plot(larger_pos_neg, smaller_pos_neg, 's', 'color', cmap(3,:), ...
-            'markersize', markersize, 'markerfacecolor', cmap(3,:), ...
-            'markeredgecolor', cmap(3,:));
+
+        plot(absc_pos, ord_pos, 'o', ...
+            'color', 'k', ...
+            'markersize', markersize, ...
+            'markeredgecolor', 'k');
+
+        gray_face = 0.6 * ones(1,3);
+        gray_edge = 0.3 * ones(1,3);
+
+        plot(absc_pos_neg, ord_pos_neg, 's', ...
+            'color', cmap(3,:), ...
+            'markersize', markersize, ...
+            'markerfacecolor', gray_face, ...
+            'markeredgecolor', gray_edge);
+
+
+
+
 
         set(gca,'xscale', xscaleScatter{i}, 'yscale', yscaleScatter{i});
         tickpref;
@@ -393,15 +444,34 @@ pval = ranksum(datadiffRand, datadiff_pos_neg)
 
         n = histc(datadiff_pos, edges{i});
         pdf_pos = n ./ sum(n);
-        hp = plot(edges{i}, pdf_pos, 's-', 'markersize', markersize, ...
-            'markerfacecolor', cmap(1,:), 'markeredgecolor', cmap(1,:) );
-        set(hp, 'color', cmap(1,:));
+
+%         hp = plot(edges{i}, pdf_pos, 's-', 'markersize', markersize, ...
+%             'markerfacecolor', cmap(1,:), 'markeredgecolor', cmap(1,:) );
+%         set(hp, 'color', cmap(1,:));
+% 
+%         n = histc(datadiff_pos_neg, edges{i});
+%         pdf_pos_neg = n ./ sum(n);
+%         hp = plot(edges{i}, pdf_pos_neg, 's-', 'markersize', markersize, ...
+%             'markerfacecolor', cmap(3,:), 'markeredgecolor', cmap(3,:) );
+%         set(hp, 'color', cmap(3,:));
+
+
+        hp = plot(edges{i}, pdf_pos, 'ko-', ...
+            'markersize', markersize, ...
+            'markerfacecolor', 'k');
+        set(hp, 'color', 'k');
+
 
         n = histc(datadiff_pos_neg, edges{i});
         pdf_pos_neg = n ./ sum(n);
-        hp = plot(edges{i}, pdf_pos_neg, 's-', 'markersize', markersize, ...
-            'markerfacecolor', cmap(3,:), 'markeredgecolor', cmap(3,:) );
-        set(hp, 'color', cmap(3,:));
+
+        hp = plot(edges{i}, pdf_pos_neg, 's-', ...
+            'markersize', markersize, ...
+            'markerfacecolor', 0.6*ones(1,3), ...
+            'markeredgecolor', 0.3*ones(1,3));
+        set(hp, 'color', 0.6*ones(1,3));
+
+
 
 
         % Random distribution

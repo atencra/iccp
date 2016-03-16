@@ -66,10 +66,21 @@ asidiff_neg = abs( larger_neg - smaller_neg );
 [larger_pos_neg,smaller_pos_neg] = iccp_largersmaller(asi_pos_neg(:,1),asi_pos_neg(:,2));
 asidiff_pos_neg = abs( larger_pos_neg - smaller_pos_neg );
 
+
+
+% Randomly order the values
+[absc_pos, ord_pos] = ...
+    iccp_randomize_columns(asi_pos(:,1), asi_pos(:,2));
+
+[absc_pos_neg, ord_pos_neg] = ...
+    iccp_randomize_columns(asi_pos_neg(:,1), asi_pos_neg(:,2));
+
+
+
+% Estimate, print summary statistics
 fprintf('\n');
 label = 'FIO ASI';
 iccp_ccc_pos_neg_summary(asidiff_pos, asidiff_neg, asidiff_pos_neg, label);
-
 
 
 fprintf('\n');
@@ -86,50 +97,108 @@ markersize = 4;
 
 figure;
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Plot ASI Pairwise values
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 subplot(3,1,1);
 hold on;
-xlim([0.5 1]);
+xlim([0.1 1]);
 ylim([xlim]);
 plot([xlim], [xlim], 'k-');
 
-plot(larger_pos, smaller_pos, 's', 'color', cmap(1,:), ...
-   'markersize', markersize, 'markerfacecolor', cmap(1,:), ...
-   'markeredgecolor', cmap(1,:));
+% plot(larger_pos, smaller_pos, 's', 'color', cmap(1,:), ...
+%    'markersize', markersize, 'markerfacecolor', cmap(1,:), ...
+%    'markeredgecolor', cmap(1,:));
+% 
+% % plot(larger_neg, smaller_neg, 'o', 'color', cmap(2,:), ...
+% %    'markersize', markersize, 'markerfacecolor', cmap(2,:), ...
+% %    'markeredgecolor', cmap(2,:));
+% 
+% plot(larger_pos_neg, smaller_pos_neg, 's', 'color', cmap(3,:), ...
+%    'markersize', markersize, 'markerfacecolor', cmap(3,:), ...
+%    'markeredgecolor', cmap(3,:));
 
-% plot(larger_neg, smaller_neg, 'o', 'color', cmap(2,:), ...
-%    'markersize', markersize, 'markerfacecolor', cmap(2,:), ...
-%    'markeredgecolor', cmap(2,:));
 
-plot(larger_pos_neg, smaller_pos_neg, 's', 'color', cmap(3,:), ...
-   'markersize', markersize, 'markerfacecolor', cmap(3,:), ...
-   'markeredgecolor', cmap(3,:));
+p = 3;
+plot(absc_pos.^p, ord_pos.^p, 'o', ...
+    'color', 'k', ...
+    'markersize', markersize, ...
+    'markeredgecolor', 'k');
+
+gray_face = 0.6 * ones(1,3);
+gray_edge = 0.3 * ones(1,3);
+
+plot(absc_pos_neg.^p, ord_pos_neg.^p, 's', ...
+    'color', gray_face, ...
+    'markersize', markersize, ...
+    'markerfacecolor', gray_face, ...
+    'markeredgecolor', gray_edge);
+
+
+
+
+% set(gca,'xscale', 'log', 'yscale', 'log');
+
 
 tickpref;
-tick = 0.5:0.1:1;
-set(gca,'xtick', tick, 'xticklabel', tick);
-set(gca,'ytick', tick, 'yticklabel', tick);
+ticklabel = 0.3:0.1:1;
+tick = ticklabel.^(p);
+set(gca,'xtick', tick, 'xticklabel', ticklabel);
+set(gca,'ytick', tick, 'yticklabel', ticklabel);
 xlabel('ASI Neuron 1');
 ylabel('ASI Neuron 2');
 subplot_label(gca,'A');
 
 
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Plot ASI Difference
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 subplot(3,1,2);
 hold on;
 edges_asi = 0:0.025:0.5;
+
+% n = histc(asidiff_pos, edges_asi);
+% pdf_pos = n ./ sum(n);
+% hp = plot(edges_asi, pdf_pos, 's-', 'markersize', markersize, 'markerfacecolor', cmap(1,:), 'markeredgecolor', cmap(1,:) );
+% set(hp, 'color', cmap(1,:));
+% 
+% % n = histc(asidiff_neg, edges_asi);
+% % pdf_neg = n ./ sum(n);
+% % hp = plot(edges_asi, pdf_neg, 'o-', 'markersize', markersize, 'markerfacecolor', cmap(2,:), 'markeredgecolor', cmap(2,:) );
+% % set(hp, 'color', cmap(2,:));
+% 
+% n = histc(asidiff_pos_neg, edges_asi);
+% pdf_pos_neg = n ./ sum(n);
+% hp = plot(edges_asi, pdf_pos_neg, 's-', 'markersize', markersize, 'markerfacecolor', cmap(3,:), 'markeredgecolor', cmap(3,:) );
+% set(hp, 'color', cmap(3,:));
+
+
+
 n = histc(asidiff_pos, edges_asi);
 pdf_pos = n ./ sum(n);
-hp = plot(edges_asi, pdf_pos, 's-', 'markersize', markersize, 'markerfacecolor', cmap(1,:), 'markeredgecolor', cmap(1,:) );
-set(hp, 'color', cmap(1,:));
+hp = plot(edges_asi, pdf_pos, 'ko-', ...
+    'markersize', markersize, ...
+    'markerfacecolor', 'k');
+set(hp, 'color', 'k');
 
-% n = histc(asidiff_neg, edges_asi);
-% pdf_neg = n ./ sum(n);
-% hp = plot(edges_asi, pdf_neg, 'o-', 'markersize', markersize, 'markerfacecolor', cmap(2,:), 'markeredgecolor', cmap(2,:) );
-% set(hp, 'color', cmap(2,:));
 
 n = histc(asidiff_pos_neg, edges_asi);
 pdf_pos_neg = n ./ sum(n);
-hp = plot(edges_asi, pdf_pos_neg, 's-', 'markersize', markersize, 'markerfacecolor', cmap(3,:), 'markeredgecolor', cmap(3,:) );
-set(hp, 'color', cmap(3,:));
+hp = plot(edges_asi, pdf_pos_neg, 's-', ...
+    'markersize', markersize, ...
+    'markerfacecolor', 0.6*ones(1,3), ...
+    'markeredgecolor', 0.3*ones(1,3));
+set(hp, 'color', 0.6*ones(1,3));
+
+
+
 
 hold on;
 box off;
@@ -150,25 +219,39 @@ subplot_label(gca,'B');
 
 
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Plot FIO Similarity
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 subplot(3,1,3);
 hold on;
 edges_si = 0.4:0.025:1;
+
 n = histc(si_pos, edges_si);
 pdf_pos = n ./ sum(n);
-hp = plot(edges_si(1:end-1), pdf_pos(1:end-1), 's-', 'markersize', markersize, 'markerfacecolor', cmap(1,:), 'markeredgecolor', cmap(1,:) );
-set(hp, 'color', cmap(1,:));
+hp = plot(edges_si(1:end-1), pdf_pos(1:end-1), 'ko-',...
+    'markersize', markersize, ...
+    'markerfacecolor', 'k');
+set(hp, 'color', 'k');
 
-% n = histc(si_neg, edges_si);
-% pdf_neg = n ./ sum(n);
-% hp = plot(edges_si(1:end-1), pdf_neg(1:end-1), 'o-', 'markersize', markersize, 'markerfacecolor', cmap(2,:), 'markeredgecolor', cmap(2,:) );
-% set(hp, 'color', cmap(2,:));
+
 
 n = histc(si_pos_neg, edges_si);
 pdf_pos_neg = n ./ sum(n);
-hp = plot(edges_si(1:end-1), pdf_pos_neg(1:end-1), 's-', 'markersize', markersize, 'markerfacecolor', cmap(3,:), 'markeredgecolor', cmap(3,:) );
-set(hp, 'color', cmap(3,:));
+hp = plot(edges_si(1:end-1), pdf_pos_neg(1:end-1), 's-', ...
+    'markersize', markersize, ...
+    'markerfacecolor', 0.6*ones(1,3), ...
+    'markeredgecolor', 0.3*ones(1,3));
+set(hp, 'color', 0.6*ones(1,3));
 
-% [edges_si(:) pdf_pos(:) pdf_neg(:) pdf_pos_neg(:)]
+
+
+
+
+
+
+
 
 hold on;
 box off;
@@ -206,6 +289,30 @@ subplot_label(gca,'C');
 %    length(ccpairs_si),mean(ccpairs_si), std(ccpairs_si), std(ccpairs_si)./sqrt(length(ccpairs_si)));
 % fprintf('MD=%.4f, MAD=%.4f, MX=%.4f\n', ...
 %    median(ccpairs_si), mad(ccpairs_si), max(ccpairs_si));
+
+
+
+
+% Estimate correlation values based on random sampling
+logtransform = 0;
+[rpop_med, rpop_ci, pval] = ...
+    iccp_pairwise_corr_rand_test(absc_pos, ord_pos, logtransform);
+fprintf('\n');
+fprintf(sprintf('%s Pos pairs - randomized\n','ASI'));
+fprintf('Pairwise Randomization: r=%.4f,p=%.4f\n', rpop_med,pval);
+fprintf('Confidence Intervals: [%.4f, %.4f]\n', rpop_ci(1), rpop_ci(2));
+fprintf('\n\n');
+
+
+logtransform = 0;
+[rpop_med, rpop_ci, pval] = ...
+    iccp_pairwise_corr_rand_test(absc_pos_neg, ord_pos_neg, logtransform);
+fprintf('\n');
+fprintf(sprintf('%s Pos-Neg pairs - randomized\n','ASI'));
+fprintf('Pairwise Randomization: r=%.4f,p=%.4f\n', rpop_med,pval);
+fprintf('Confidence Intervals: [%.4f, %.4f]\n', rpop_ci(1), rpop_ci(2));
+fprintf('\n\n');
+
 
 
 set(gcf,'position', [465 207 321 695]);

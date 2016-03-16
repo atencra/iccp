@@ -290,14 +290,14 @@ if ( sum(indexNeg) )
 
     % Set up plotting parameters, labels, etc.
     xmin = [0.1 0.01 0.2];
-    xmax = [30 1 1];
+    xmax = [100 1 1];
     ymin = xmin;
     ymax = xmax;
     xscale = {'log', 'log', 'log'};
     yscale = {'log', 'log', 'log'};
     edges = {0:2.5:20, 0:0.05:0.4, 0:0.075:0.6};
     edges = {linspace(0,100,21), linspace(0,0.4,17), 0:0.075:0.6};
-    tick = {[0.1 1 10 30], [0.01 0.1 1], [0:0.2:1]};
+    tick = {[0.1 1 10 100], [0.01 0.1 1], [0:0.2:1]};
     ticklabel = {[5 10 20 30], [0.5 1 2 4 8], [0:10:50]};
     xlabel1 = {'Firing Rate', 'RPI', 'Separability Index'};
     xlabel2 = {'FR Difference (Hz)', 'RPI Difference', 'Separability Index Diff'};
@@ -364,8 +364,8 @@ if ( sum(indexNeg) )
         [larger,smaller] = iccp_largersmaller(sampleRand1,sampleRand2);
         datadiffRand = abs( larger - smaller );
 
-pval = ranksum(datadiffRand, datadiff_pos)
-pval = ranksum(datadiffRand, datadiff_pos_neg)
+        pval = ranksum(datadiffRand, datadiff_pos)
+        pval = ranksum(datadiffRand, datadiff_pos_neg)
 
 
         subplot(3,1,1);
@@ -376,13 +376,27 @@ pval = ranksum(datadiffRand, datadiff_pos_neg)
         cmap = brewmaps('blues', 4);
         cmap = cmap(1:3,:);
 
-        plot(larger_pos, smaller_pos, 's', 'color', cmap(1,:), ...
-        'markersize', markersize, 'markerfacecolor', cmap(1,:), ...
-        'markeredgecolor', cmap(1,:));
+        [absc_pos, ord_pos] = ...
+            iccp_randomize_columns(dataspktype_pos(:,1),dataspktype_pos(:,2));
 
-        plot(larger_pos_neg, smaller_pos_neg, 's', 'color', cmap(3,:), ...
-        'markersize', markersize, 'markerfacecolor', cmap(3,:), ...
-        'markeredgecolor', cmap(3,:));
+        [absc_pos_neg, ord_pos_neg] = ...
+            iccp_randomize_columns(dataspktype_pos_neg(:,1),dataspktype_pos_neg(:,2));
+
+
+        plot(absc_pos, ord_pos, 'o', ...
+            'color', 'k', ...
+            'markersize', markersize, ...
+            'markeredgecolor', 'k');
+
+        gray_face = 0.6 * ones(1,3);
+        gray_edge = 0.3 * ones(1,3);
+
+        plot(absc_pos_neg, ord_pos_neg, 's', ...
+            'color', cmap(3,:), ...
+            'markersize', markersize, ...
+            'markerfacecolor', gray_face, ...
+            'markeredgecolor', gray_edge);
+
 
 
         set(gca,'xscale', xscale{i}, 'yscale', yscale{i});
@@ -402,18 +416,20 @@ pval = ranksum(datadiffRand, datadiff_pos_neg)
 
         n = histc(datadiff_pos, edges{i});
         pdf_pos = n ./ sum(n);
-        hp = plot(edges{i}, pdf_pos, 's-', 'markersize', markersize, 'markerfacecolor', cmap(1,:), 'markeredgecolor', cmap(1,:) );
-        set(hp, 'color', cmap(1,:));
+        hp = plot(edges{i}, pdf_pos, 'ko-', ...
+            'markersize', markersize, ...
+            'markerfacecolor', 'k');
+        set(hp, 'color', 'k');
+
 
         n = histc(datadiff_pos_neg, edges{i});
         pdf_pos_neg = n ./ sum(n);
-        hp = plot(edges{i}, pdf_pos_neg, 's-', 'markersize', markersize, 'markerfacecolor', cmap(3,:), 'markeredgecolor', cmap(3,:) );
-        set(hp, 'color', cmap(3,:));
+        hp = plot(edges{i}, pdf_pos_neg, 's-', ...
+            'markersize', markersize, ...
+            'markerfacecolor', 0.6*ones(1,3), ...
+            'markeredgecolor', 0.3*ones(1,3));
+        set(hp, 'color', 0.6*ones(1,3));
 
-%         n = histc(datadiffRand, edges{i});
-%         pdfRand = n ./ sum(n);
-%         hp = plot(edges{i}, pdfRand, 's-', 'markersize', markersize, 'markerfacecolor', 'k', 'markeredgecolor', 'k' );
-%         set(hp, 'color', 'k');
 
         n = histc(datadiffRand, edges{i});
         pdfRand = n ./ sum(n);
@@ -435,22 +451,29 @@ pval = ranksum(datadiffRand, datadiff_pos_neg)
         subplot_label(gca,'B');
 
 
+
+
         subplot(3,1,3);
         hold on;
 
-        cmap = brewmaps('greens', 4);
-        cmap = cmap(1:3,:);
+        plot(datadiff(indexPos), cccPos(indexPos), 'o', ...
+            'color', 'k', ...
+            'markersize', markersize, ...
+            'markeredgecolor', 'k');
+    %        'markerfacecolor', 'k', ...
+    %        'markeredgecolor', 'k');
 
-        plot(datadiff(indexPos), cccPos(indexPos), 's', 'color', cmap(1,:), ...
-        'markersize', markersize, 'markerfacecolor', cmap(1,:), ...
-        'markeredgecolor', cmap(1,:));
+        plot(datadiff(indexNeg), cccNeg(indexNeg), 's', ...
+            'color', 0.6*ones(1,3), ...
+            'markersize', markersize, ...
+            'markerfacecolor', 0.6*ones(1,3), ...
+            'markeredgecolor', 0.3*ones(1,3));
+
+
 
         [r,p] = corrcoef( log10(datadiff(indexPos)), log10(cccPos(indexPos)) );
         fprintf('%s: Exc: r=%.4f, p = %.4f\n', datatype{i}, r(2),p(2));
 
-        plot(datadiff(indexNeg), cccNeg(indexNeg), 's', 'color', cmap(3,:), ...
-        'markersize', markersize, 'markerfacecolor', cmap(3,:), ...
-        'markeredgecolor', cmap(3,:));
 
         [r,p] = corrcoef( log10(datadiff(indexNeg)), log10(cccNeg(indexNeg)) );
         fprintf('%s: Sup: r=%.4f, p = %.4f\n', datatype{i}, r(2),p(2));
@@ -487,6 +510,28 @@ pval = ranksum(datadiffRand, datadiff_pos_neg)
        [r,p] = corrcoef(x(:), log10(y(:)));
        fprintf('ccc vs diff, r = %.4f, p = %.4f', r(2), p(2));
        fprintf('\n');
+
+
+        logtransform = 1;
+        [rpop_med, rpop_ci, pval] = ...
+            iccp_pairwise_corr_rand_test(absc_pos, ord_pos, logtransform);
+        fprintf('\n');
+        fprintf(sprintf('%s Pos pairs - randomized\n',datatype{i}));
+        fprintf('Pairwise Randomization: r=%.4f,p=%.4f\n', rpop_med,pval);
+        fprintf('Confidence Intervals: [%.4f, %.4f]\n', rpop_ci(1), rpop_ci(2));
+        fprintf('\n\n');
+
+
+        logtransform = 1;
+        [rpop_med, rpop_ci, pval] = ...
+            iccp_pairwise_corr_rand_test(absc_pos_neg, ord_pos_neg, logtransform);
+        fprintf('\n');
+        fprintf(sprintf('%s Pos-Neg pairs - randomized\n',datatype{i}));
+        fprintf('Pairwise Randomization: r=%.4f,p=%.4f\n', rpop_med,pval);
+        fprintf('Confidence Intervals: [%.4f, %.4f]\n', rpop_ci(1), rpop_ci(2));
+        fprintf('\n\n');
+
+
 
        set(gcf,'position', [1434 131 321 694]);
        print_mfilename(mfilename);

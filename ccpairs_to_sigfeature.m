@@ -15,7 +15,7 @@ if ( isfield(ccpairs,'pd_pos') && isfield(ccpairs,'pd_neg') )
     pdNeg = abs(pdNeg);
     hwNeg = [ccpairs.hw_neg];
     sigNeg = [ccpairs.sigfeature_neg];
-    sigNeg = logical(sigNeg & pdNeg > 0);
+    sigNeg = logical(sigNeg & pdNeg > 0); %***
     cccNeg = [ccpairs.ccc_neg];
     cccNeg(cccNeg < 0) = 0.0001;
 

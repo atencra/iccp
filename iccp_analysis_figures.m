@@ -53,6 +53,7 @@
 % # iccpairs_plot_fradata_cf_resptype(fradata);
 % # iccpairs_plot_fradata_bw(fradata);
 % # iccpairs_plot_fradata_q(fradata);
+%
 % # data = iccp_plot_strf_similarity_crosscorr_pos_neg(ccpairs)
 % # data = iccp_plot_strf_fr_pli_crosscorr_pos_neg(ccpairs)
 % # data = iccp_plot_strf_bmf_crosscorr_pos_neg(ccpairs)
@@ -85,6 +86,21 @@
 
 
 
+%% Figures for Paper
+% * Figure 3: iccp_plot_crosscorr_pd_hw_ccc_pos_neg(ccpairs);
+% * Figure 6: iccp_plot_info_calc_pop(rbarpop, dtpop, infopop, rbarpairs, dtpairs, infopairs);
+% * FRA figures: need to run FRA functions inside the directory D:\ICC_Pairs_Data\fra
+% * Figure 7: CF: iccp_plot_pairs_fra_params;
+% * Figure 7: Response Type: iccp_plot_pairs_fra_resptype_scatter_hist;
+% * Figure 8: BW: iccp_plot_pairs_fra_params;
+% * Figure 8: Q: iccp_plot_pairs_fra_params;
+% * Figure 9: STRF SI, CCC: iccp_plot_strf_similarity_crosscorr_pos_neg(ccpairs)
+% * Figure 10: FR, PLI, CCC: iccp_plot_strf_fr_pli_crosscorr_pos_neg(ccpairs)
+% * Figure 11: CF, Q, Latency: iccp_plot_strf_cf_q_latency_crosscorr_pos_neg(ccpairs);
+% * Figure 12: bTMF, bSMF: iccp_plot_strf_bmf_crosscorr_pos_neg(ccpairs)
+% * Figure 13: Example FIO figure.
+% * Figure 14: FIO ASI, SI: iccp_plot_nonlinearity_asi_si_crosscorr_pos_neg(ccpairs)
+% * Figure 15: FIO Theta, Sigma: 
 
 
 

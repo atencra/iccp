@@ -68,8 +68,15 @@ for i = 1:nrows
    xlim([minmin maxmax]);
    ylim([minmin maxmax]);
    plot(xlim, ylim, 'k-');
+
    [larger, smaller] = iccp_largersmaller(rtdata{i}(:,1),rtdata{i}(:,2));
-   scatter(larger,smaller,10,'MarkerEdgeColor', 'black', 'MarkerFaceColor', [0.6 0.6 0.6])
+%    scatter(larger,smaller,10,'MarkerEdgeColor', 'black', 'MarkerFaceColor', [0.6 0.6 0.6])
+
+
+    [absc, ord] = iccp_randomize_columns(rtdata{i}(:,1),rtdata{i}(:,2));
+    scatter(absc, ord, 10, 'MarkerEdgeColor', 'black'); %, 'MarkerFaceColor', [0.8 0.8 0.8]);
+
+
    xlim([minmin maxmax])
    ylim([minmin maxmax])
    tickpref
@@ -79,6 +86,7 @@ for i = 1:nrows
    ylabel(sprintf('%s Neuron 2',label{i}))
    xlabel(sprintf('%s Neuron 1',label{i}))
    subplot_label(gca,'C');
+
 
    subplot(1,2,2);
    n = histc(rtdiff{i}, edges);
@@ -107,6 +115,18 @@ for i = 1:nrows
    fprintf('%s Difference\n', label{i});
    fprintf('MN = %.4f, SD = %.4f, SE = %.4f, MD = %.4f, MAD = %.4f, n = %.0f\n',...
       dstats.mn, dstats.sd, dstats.se, dstats.md, dstats.mad, length(rtdata{i}(:,1)) );
+
+
+    logtransform = 0;
+    [rpop_med, rpop_ci, pval] = ...
+        iccp_pairwise_corr_rand_test(rtdata{i}(:,1),rtdata{i}(:,2), logtransform);
+
+    fprintf('\n');
+    fprintf('Response Type pairs - randomized\n');
+    fprintf('Pairwise Randomization: r=%.4f,p=%.4f\n', rpop_med,pval);
+    fprintf('Confidence Intervals: [%.4f, %.4f]\n', rpop_ci(1), rpop_ci(2));
+
+    fprintf('\n\n');
 
 
    set(gcf,'position', [1255 657 438 161]);

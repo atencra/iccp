@@ -384,7 +384,7 @@ if ( sum(indexNeg) )
     spktype_ylabel{1} = 'Neuron 2';
     datatype = {'btmf', 'bsmf'};
 
-    xaxScatter =  {[12.5 400],[0.05 2.1]};
+    xaxScatter =  {[12.5 400],[0.05 2.5]};
     yaxScatter = xaxScatter;
 
     xscale = {'log', 'log', 'log'};
@@ -451,9 +451,15 @@ if ( sum(indexNeg) )
         [larger,smaller] = iccp_largersmaller(sampleRand1,sampleRand2);
         datadiffRand = abs( larger - smaller );
 
-
 pval = ranksum(datadiffRand, datadiff_pos)
 pval = ranksum(datadiffRand, datadiff_pos_neg)
+
+        [absc_pos, ord_pos] = ...
+            iccp_randomize_columns(dataspktype_pos(:,1),dataspktype_pos(:,2));
+
+        [absc_pos_neg, ord_pos_neg] = ...
+            iccp_randomize_columns(dataspktype_pos_neg(:,1),dataspktype_pos_neg(:,2));
+
 
 
 
@@ -462,16 +468,34 @@ pval = ranksum(datadiffRand, datadiff_pos_neg)
         plot([xaxScatter{i}], [yaxScatter{i}], 'k-');
 
 
-        cmap = brewmaps('blues', 4);
-        cmap = cmap(1:3,:);
+%         cmap = brewmaps('blues', 4);
+%         cmap = cmap(1:3,:);
+% 
+%         plot(larger_pos, smaller_pos, 's', 'color', cmap(1,:), ...
+%         'markersize', markersize, 'markerfacecolor', cmap(1,:), ...
+%         'markeredgecolor', cmap(1,:));
+% 
+%         plot(larger_pos_neg, smaller_pos_neg, 's', 'color', cmap(3,:), ...
+%         'markersize', markersize, 'markerfacecolor', cmap(3,:), ...
+%         'markeredgecolor', cmap(3,:));
 
-        plot(larger_pos, smaller_pos, 's', 'color', cmap(1,:), ...
-        'markersize', markersize, 'markerfacecolor', cmap(1,:), ...
-        'markeredgecolor', cmap(1,:));
 
-        plot(larger_pos_neg, smaller_pos_neg, 's', 'color', cmap(3,:), ...
-        'markersize', markersize, 'markerfacecolor', cmap(3,:), ...
-        'markeredgecolor', cmap(3,:));
+
+        plot(absc_pos, ord_pos, 'o', ...
+            'color', 'k', ...
+            'markersize', markersize, ...
+            'markeredgecolor', 'k');
+
+        gray_face = 0.6 * ones(1,3);
+        gray_edge = 0.3 * ones(1,3);
+
+        plot(absc_pos_neg, ord_pos_neg, 's', ...
+            'color', gray_face, ...
+            'markersize', markersize, ...
+            'markerfacecolor', gray_face, ...
+            'markeredgecolor', gray_edge);
+
+
 
         set(gca,'xscale', xscale{i}, 'yscale', yscale{i});
         tickpref;
@@ -487,33 +511,48 @@ pval = ranksum(datadiffRand, datadiff_pos_neg)
 
 
 
+
+
+
         subplot(3,1,2);
         hold on;
 
+%         n = histc(datadiff_pos, edges{i});
+%         pdf_pos = n ./ sum(n);
+%         hp = plot(edges{i}, pdf_pos, 's-', 'markersize', markersize, ...
+%             'markerfacecolor', cmap(1,:), 'markeredgecolor', cmap(1,:) );
+%         set(hp, 'color', cmap(1,:));
+% 
+%         n = histc(datadiff_pos_neg, edges{i});
+%         pdf_pos_neg = n ./ sum(n);
+%         hp = plot(edges{i}, pdf_pos_neg, 's-', 'markersize', markersize, ...
+%             'markerfacecolor', cmap(3,:), 'markeredgecolor', cmap(3,:) );
+%         set(hp, 'color', cmap(3,:));
+
+
+
         n = histc(datadiff_pos, edges{i});
         pdf_pos = n ./ sum(n);
-        hp = plot(edges{i}, pdf_pos, 's-', 'markersize', markersize, ...
-            'markerfacecolor', cmap(1,:), 'markeredgecolor', cmap(1,:) );
-        set(hp, 'color', cmap(1,:));
+        hp = plot(edges{i}, pdf_pos, 'ko-', ...
+            'markersize', markersize, ...
+            'markerfacecolor', 'k');
+        set(hp, 'color', 'k');
+
 
         n = histc(datadiff_pos_neg, edges{i});
         pdf_pos_neg = n ./ sum(n);
-        hp = plot(edges{i}, pdf_pos_neg, 's-', 'markersize', markersize, ...
-            'markerfacecolor', cmap(3,:), 'markeredgecolor', cmap(3,:) );
-        set(hp, 'color', cmap(3,:));
+        hp = plot(edges{i}, pdf_pos_neg, 's-', ...
+            'markersize', markersize, ...
+            'markerfacecolor', 0.6*ones(1,3), ...
+            'markeredgecolor', 0.3*ones(1,3));
+        set(hp, 'color', 0.6*ones(1,3));
+
 
 
         n = histc(datadiffRand, edges{i});
         pdfRand = n ./ sum(n);
         hp = plot(edges{i}, pdfRand, 'k-');
         set(hp, 'color', 'k', 'linewidth', 2);
-
-
-%         hp = plot(edges{i}, pdfRand, 's-', ...
-%             'markersize', markersize, ...
-%             'markerfacecolor', 'k', ...
-%             'markeredgecolor', 'k' );
-%         set(hp, 'color', 'k');
 
 
         hold on;
@@ -533,36 +572,44 @@ pval = ranksum(datadiffRand, datadiff_pos_neg)
 
 
 
+
+
+
+
+
+
+
+
         subplot(3,1,3);
         hold on;
 
         cmap = brewmaps('greens', 4);
         cmap = cmap(1:3,:);
 
-        plot(datadiff(indexPos), cccPos(indexPos), 's', 'color', cmap(1,:), ...
-        'markersize', markersize, 'markerfacecolor', cmap(1,:), ...
-        'markeredgecolor', cmap(1,:));
+%         plot(datadiff(indexPos), cccPos(indexPos), 's', 'color', cmap(1,:), ...
+%         'markersize', markersize, 'markerfacecolor', cmap(1,:), ...
+%         'markeredgecolor', cmap(1,:));
+% 
+%         plot(datadiff(indexNeg), cccNeg(indexNeg), 's', 'color', cmap(3,:), ...
+%         'markersize', markersize, 'markerfacecolor', cmap(3,:), ...
+%         'markeredgecolor', cmap(3,:));
 
-        x = log10(datadiff(indexPos));
-        y = log10(cccPos(indexPos));
-        index = ~isinf(x);
-        x = x(index);
-        y = y(index);
-        [r,p] = corrcoef( x, y );
-        fprintf('%s: Diff vs. CCC: Exc: r=%.4f, p = %.4f\n', datatype{i}, r(2),p(2));
 
-        plot(datadiff(indexNeg), cccNeg(indexNeg), 's', 'color', cmap(3,:), ...
-        'markersize', markersize, 'markerfacecolor', cmap(3,:), ...
-        'markeredgecolor', cmap(3,:));
 
-        x = log10(datadiff(indexNeg));
-        y = log10(cccPos(indexNeg));
-        index = ~isinf(x);
-        x = x(index);
-        y = y(index);
-        [r,p] = corrcoef( x, y );
-        fprintf('%s: Diff vs. CCC: Sup: r=%.4f, p = %.4f\n', datatype{i}, r(2),p(2));
+        plot(datadiff(indexPos), cccPos(indexPos), 'o', ...
+            'color', 'k', ...
+            'markersize', markersize, ...
+            'markeredgecolor', 'k');
 
+        plot(datadiff(indexNeg), cccNeg(indexNeg), 's', ...
+            'color', 0.6*ones(1,3), ...
+            'markersize', markersize, ...
+            'markerfacecolor', 0.6*ones(1,3), ...
+            'markeredgecolor', 0.3*ones(1,3));
+
+
+
+        
         legend('EP', 'SP');
 
         set(gca,'xtick', xtickDiff{i}, 'xticklabel', xtickDiff{i});
@@ -584,6 +631,28 @@ pval = ranksum(datadiffRand, datadiff_pos_neg)
 
 
 
+
+
+        x = log10(datadiff(indexPos));
+        y = log10(cccPos(indexPos));
+        index = ~isinf(x);
+        x = x(index);
+        y = y(index);
+        [r,p] = corrcoef( x, y );
+        fprintf('%s: Diff vs. CCC: Exc: r=%.4f, p = %.4f\n', datatype{i}, r(2),p(2));
+
+
+        x = log10(datadiff(indexNeg));
+        y = log10(cccPos(indexNeg));
+        index = ~isinf(x);
+        x = x(index);
+        y = y(index);
+        [r,p] = corrcoef( x, y );
+        fprintf('%s: Diff vs. CCC: Sup: r=%.4f, p = %.4f\n', datatype{i}, r(2),p(2));
+
+
+
+
         fprintf('\n');
         fprintf('%s Larger vs. Smaller\n', datatype{i});
 
@@ -598,6 +667,32 @@ pval = ranksum(datadiffRand, datadiff_pos_neg)
         fprintf('MD=%.4f\nMAD=%.4f\nMX=%.4f\n', ...
             median(datadiff), mad(datadiff), max(datadiff));
         fprintf('\n\n');
+
+
+
+
+
+        logtransform = 0;
+        [rpop_med, rpop_ci, pval] = ...
+            iccp_pairwise_corr_rand_test(absc_pos, ord_pos, logtransform);
+        fprintf('\n');
+        fprintf(sprintf('%s Pos pairs - randomized\n',datatype{i}));
+        fprintf('Pairwise Randomization: r=%.4f,p=%.4f\n', rpop_med,pval);
+        fprintf('Confidence Intervals: [%.4f, %.4f]\n', rpop_ci(1), rpop_ci(2));
+        fprintf('\n\n');
+
+
+        logtransform = 0;
+        [rpop_med, rpop_ci, pval] = ...
+            iccp_pairwise_corr_rand_test(absc_pos_neg, ord_pos_neg, logtransform);
+        fprintf('\n');
+        fprintf(sprintf('%s Pos-Neg pairs - randomized\n',datatype{i}));
+        fprintf('Pairwise Randomization: r=%.4f,p=%.4f\n', rpop_med,pval);
+        fprintf('Confidence Intervals: [%.4f, %.4f]\n', rpop_ci(1), rpop_ci(2));
+        fprintf('\n\n');
+
+
+
 
     end % (for i)
 

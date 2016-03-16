@@ -127,25 +127,8 @@ thetadiff_pos_neg = abs( theta_larger_pos_neg - theta_smaller_pos_neg );
 
 
 
-% Split Nonlinearity Threshold (theta) into the three correlation groups
-theta_pos = theta(index_pos_only,:);
-theta_neg = theta(index_neg_only,:);
-theta_pos_neg = theta(index_pos_neg,:);
 
-[theta_larger_pos, theta_smaller_pos] = iccp_largersmaller(theta_pos(:,1),theta_pos(:,2));
-theta_larger_pos = theta_larger_pos(nmse_pos);
-theta_smaller_pos = theta_smaller_pos(nmse_pos);
-thetadiff_pos = abs( theta_larger_pos - theta_smaller_pos );
 
-[theta_larger_neg, theta_smaller_neg] = iccp_largersmaller(theta_neg(:,1),theta_neg(:,2));
-theta_larger_neg = theta_larger_neg(nmse_neg);
-theta_smaller_neg = theta_smaller_neg(nmse_neg);
-thetadiff_neg = abs( theta_larger_neg - theta_smaller_neg );
-
-[theta_larger_pos_neg, theta_smaller_pos_neg] = iccp_largersmaller(theta_pos_neg(:,1),theta_pos_neg(:,2));
-theta_larger_pos_neg = theta_larger_pos_neg(nmse_pos_neg);
-theta_smaller_pos_neg = theta_smaller_pos_neg(nmse_pos_neg);
-thetadiff_pos_neg = abs( theta_larger_pos_neg - theta_smaller_pos_neg );
 
 
 % Make a random distribution, sample, compute paired differences, and plot.
@@ -200,6 +183,31 @@ sigma_smaller_pos_neg = sigma_smaller_pos_neg(nmse_pos_neg);
 sigmadiff_pos_neg = abs( sigma_larger_pos_neg - sigma_smaller_pos_neg );
 
 
+% Randomly order the values
+[absc_theta_pos, ord_theta_pos] = ...
+    iccp_randomize_columns(theta_pos(:,1), theta_pos(:,2));
+
+[absc_theta_pos_neg, ord_theta_pos_neg] = ...
+    iccp_randomize_columns(theta_pos_neg(:,1), theta_pos_neg(:,2));
+
+
+
+[absc_sigma_pos, ord_sigma_pos] = ...
+    iccp_randomize_columns(sigma_pos(:,1), sigma_pos(:,2));
+
+[absc_sigma_pos_neg, ord_sigma_pos_neg] = ...
+    iccp_randomize_columns(sigma_pos_neg(:,1), sigma_pos_neg(:,2));
+
+
+
+
+
+
+
+
+
+
+
 % Make a random distribution, sample, compute paired differences, and plot.
 dataUnq = unique(sigma);
 indexRand = ceil(length(dataUnq) * rand(1,size(theta,1)));
@@ -230,6 +238,10 @@ markersize = 4;
 
 figure;
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Theta Pairwise 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 subplot(2,2,1);
 hold on;
 xytick = -1:4;
@@ -237,17 +249,23 @@ xlim([min(xytick) max(xytick)]);
 ylim([min(xytick) max(xytick)]);
 plot(xlim, ylim, 'k-');
 
-plot(theta_larger_pos, theta_smaller_pos, 's', 'color', cmap(1,:), ...
-   'markersize', markersize, 'markerfacecolor', cmap(1,:), ...
-   'markeredgecolor', cmap(1,:));
 
-% plot(theta_larger_neg, theta_smaller_neg, 'o', 'color', cmap(2,:), ...
-%    'markersize', markersize, 'markerfacecolor', cmap(2,:), ...
-%    'markeredgecolor', cmap(2,:));
+plot(absc_theta_pos, ord_theta_pos, 'o', ...
+    'color', 'k', ...
+    'markersize', markersize, ...
+    'markeredgecolor', 'k');
 
-plot(theta_larger_pos_neg, theta_smaller_pos_neg, 's', 'color', cmap(3,:), ...
-   'markersize', markersize, 'markerfacecolor', cmap(3,:), ...
-   'markeredgecolor', cmap(3,:));
+gray_face = 0.6 * ones(1,3);
+gray_edge = 0.3 * ones(1,3);
+
+plot(absc_theta_pos_neg, ord_theta_pos_neg, 's', ...
+    'color', gray_face, ...
+    'markersize', markersize, ...
+    'markerfacecolor', gray_face, ...
+    'markeredgecolor', gray_edge);
+
+
+
 
 tickpref;
 xlabel('Theta (SD) Neuron 1');
@@ -258,29 +276,41 @@ subplot_label(gca,'A');
 
 
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Theta Difference Histogram
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 subplot(2,2,2);
 hold on;
 edges = 0:0.5:4;
+
 n = histc(thetadiff_pos, edges);
 pdf_pos = n ./ sum(n);
-hp = plot(edges, pdf_pos, 's-', 'markersize', markersize, 'markerfacecolor', cmap(1,:), 'markeredgecolor', cmap(1,:) );
-set(hp, 'color', cmap(1,:));
-
-% n = histc(thetadiff_neg, edges);
-% pdf_neg = n ./ sum(n);
-% hp = plot(edges, pdf_neg, 'o-', 'markersize', markersize, 'markerfacecolor', cmap(2,:), 'markeredgecolor', cmap(2,:) );
-% set(hp, 'color', cmap(2,:));
+hp = plot(edges, pdf_pos, 'ko-', ...
+    'markersize', markersize, ...
+    'markerfacecolor', 'k');
+set(hp, 'color', 'k');
 
 n = histc(thetadiff_pos_neg, edges);
 pdf_pos_neg = n ./ sum(n);
-hp = plot(edges, pdf_pos_neg, 's-', 'markersize', markersize, 'markerfacecolor', cmap(3,:), 'markeredgecolor', cmap(3,:) );
-set(hp, 'color', cmap(3,:));
+hp = plot(edges, pdf_pos_neg, 's-', ...
+    'markersize', markersize, ...
+    'markerfacecolor', 0.6*ones(1,3), ...
+    'markeredgecolor', 0.3*ones(1,3));
+set(hp, 'color', 0.6*ones(1,3));
+
+
 
 
 n = histc(thetadiffRand, edges);
 pdfRand = n ./ sum(n);
 hp = plot(edges, pdfRand, 'k-');
 set(hp, 'color', 'k', 'linewidth', 2);
+
+
+
+
 
 
 
@@ -298,7 +328,7 @@ xlim([min(edges)-0.025*range max(edges)+0.025*range]);
 ylim([0 0.4]);
 ylabel('Proportion');
 xlabel('Theta Difference (SD)');
-legend('EP only', 'EP+SP','Rand');
+legend('EP only', 'EP+ST','Rand');
 subplot_label(gca,'B');
 
 
@@ -307,25 +337,38 @@ subplot_label(gca,'B');
 
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Sigma Pairwise 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 subplot(2,2,3);
 hold on;
-xytick = 0:5;
+xytick = 0.01:5;
+xytick = [0.01 0.1 1 5];
 xlim([min(xytick) max(xytick)]);
 ylim([min(xytick) max(xytick)]);
 plot(xlim, ylim, 'k-');
 
-plot(sigma_larger_pos, sigma_smaller_pos, 's', 'color', cmap(1,:), ...
-   'markersize', markersize, 'markerfacecolor', cmap(1,:), ...
-   'markeredgecolor', cmap(1,:));
 
-% plot(sigma_larger_neg, sigma_smaller_neg, 'o', 'color', cmap(2,:), ...
-%    'markersize', markersize, 'markerfacecolor', cmap(2,:), ...
-%    'markeredgecolor', cmap(2,:));
+p = 1;
+plot(absc_sigma_pos.^(p), ord_sigma_pos.^(p), 'o', ...
+    'color', 'k', ...
+    'markersize', markersize, ...
+    'markeredgecolor', 'k');
 
-plot(sigma_larger_pos_neg, sigma_smaller_pos_neg, 's', 'color', cmap(3,:), ...
-   'markersize', markersize, 'markerfacecolor', cmap(3,:), ...
-   'markeredgecolor', cmap(3,:));
+gray_face = 0.6 * ones(1,3);
+gray_edge = 0.3 * ones(1,3);
+
+plot(absc_sigma_pos_neg.^(p), ord_sigma_pos_neg.^(p), 's', ...
+    'color', gray_face, ...
+    'markersize', markersize, ...
+    'markerfacecolor', gray_face, ...
+    'markeredgecolor', gray_edge);
+
+set(gca,'xscale', 'log', 'yscale', 'log');
+
+
+
 
 tickpref;
 xlabel('Sigma (SD) Neuron 1');
@@ -336,23 +379,31 @@ subplot_label(gca,'C');
 
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Sigma Difference Histogram
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 subplot(2,2,4);
 hold on;
 edges = 0:0.5:4;
+
+
 n = histc(sigmadiff_pos, edges);
 pdf_pos = n ./ sum(n);
-hp = plot(edges, pdf_pos, 's-', 'markersize', markersize, 'markerfacecolor', cmap(1,:), 'markeredgecolor', cmap(1,:) );
-set(hp, 'color', cmap(1,:));
-
-% n = histc(sigmadiff_neg, edges);
-% pdf_neg = n ./ sum(n);
-% hp = plot(edges, pdf_neg, 'o-', 'markersize', markersize, 'markerfacecolor', cmap(2,:), 'markeredgecolor', cmap(2,:) );
-% set(hp, 'color', cmap(2,:));
+hp = plot(edges, pdf_pos, 'ko-', ...
+    'markersize', markersize, ...
+    'markerfacecolor', 'k');
+set(hp, 'color', 'k');
 
 n = histc(sigmadiff_pos_neg, edges);
 pdf_pos_neg = n ./ sum(n);
-hp = plot(edges, pdf_pos_neg, 's-', 'markersize', markersize, 'markerfacecolor', cmap(3,:), 'markeredgecolor', cmap(3,:) );
-set(hp, 'color', cmap(3,:));
+hp = plot(edges, pdf_pos_neg, 's-', ...
+    'markersize', markersize, ...
+    'markerfacecolor', 0.6*ones(1,3), ...
+    'markeredgecolor', 0.3*ones(1,3));
+set(hp, 'color', 0.6*ones(1,3));
+
 
 n = histc(sigmadiffRand, edges);
 pdfRand = n ./ sum(n);
@@ -378,6 +429,50 @@ subplot_label(gca,'D');
 
 set(gcf,'position', [439 544 438 354]);
 print_mfilename(mfilename);
+
+
+% Estimate Theta correlation values based on random sampling
+logtransform = 0;
+[rpop_med, rpop_ci, pval] = ...
+    iccp_pairwise_corr_rand_test(absc_theta_pos, ord_theta_pos, logtransform);
+fprintf('\n');
+fprintf(sprintf('%s Pos pairs - randomized\n','Theta'));
+fprintf('Pairwise Randomization: r=%.4f,p=%.4f\n', rpop_med,pval);
+fprintf('Confidence Intervals: [%.4f, %.4f]\n', rpop_ci(1), rpop_ci(2));
+fprintf('\n\n');
+
+
+logtransform = 0;
+[rpop_med, rpop_ci, pval] = ...
+    iccp_pairwise_corr_rand_test(absc_theta_pos_neg, ord_theta_pos_neg, logtransform);
+fprintf('\n');
+fprintf(sprintf('%s Pos-Neg pairs - randomized\n','Theta'));
+fprintf('Pairwise Randomization: r=%.4f,p=%.4f\n', rpop_med,pval);
+fprintf('Confidence Intervals: [%.4f, %.4f]\n', rpop_ci(1), rpop_ci(2));
+fprintf('\n\n');
+
+
+% Estimate Sigma correlation values based on random sampling
+logtransform = 0;
+[rpop_med, rpop_ci, pval] = ...
+    iccp_pairwise_corr_rand_test(absc_sigma_pos, ord_sigma_pos, logtransform);
+fprintf('\n');
+fprintf(sprintf('%s Pos pairs - randomized\n','Sigma'));
+fprintf('Pairwise Randomization: r=%.4f,p=%.4f\n', rpop_med,pval);
+fprintf('Confidence Intervals: [%.4f, %.4f]\n', rpop_ci(1), rpop_ci(2));
+fprintf('\n\n');
+
+
+logtransform = 0;
+[rpop_med, rpop_ci, pval] = ...
+    iccp_pairwise_corr_rand_test(absc_sigma_pos_neg, ord_sigma_pos_neg, logtransform);
+fprintf('\n');
+fprintf(sprintf('%s Pos-Neg pairs - randomized\n','Sigma'));
+fprintf('Pairwise Randomization: r=%.4f,p=%.4f\n', rpop_med,pval);
+fprintf('Confidence Intervals: [%.4f, %.4f]\n', rpop_ci(1), rpop_ci(2));
+fprintf('\n\n');
+
+
 
 return;
 

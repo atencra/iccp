@@ -232,18 +232,29 @@ for i = 1:length(cmapcell)
    figure;
    subplot(3,1,1)
    hold on;
-   hp = plot(edges_pd, pdf_pd_pos, 'o-', 'markersize', markersize, 'markerfacecolor', cmap(1,:), ...
-    'markeredgecolor', cmap(1,:));
-   set(hp, 'color', cmap(1,:));
 
-   hp = plot(edges_pd, pdf_pd_neg, 's-', 'markersize', markersize, 'markerfacecolor', cmap(3,:), ...
-    'markeredgecolor', cmap(3,:));
-   set(hp, 'color', cmap(3,:));
+
+%    hp = plot(edges_pd, pdf_pd_pos, 'o-', 'markersize', markersize, 'markerfacecolor', cmap(1,:), ...
+%     'markeredgecolor', cmap(1,:));
+%    set(hp, 'color', cmap(1,:));
+% 
+%    hp = plot(edges_pd, pdf_pd_neg, 's-', 'markersize', markersize, 'markerfacecolor', cmap(3,:), ...
+%     'markeredgecolor', cmap(3,:));
+%    set(hp, 'color', cmap(3,:));
+
+
+   hp = plot(edges_pd, pdf_pd_pos, 'ko-', 'markersize', markersize, 'markerfacecolor', 'k');
+    set(hp, 'color', 'k');
+
+   hp = plot(edges_pd, pdf_pd_neg, 's-', 'markersize', markersize, 'markerfacecolor', 0.6*ones(1,3), ...
+    'markeredgecolor', 0.6*ones(1,3));
+    set(hp, 'color', 0.6*ones(1,3));
+
 
    xlabel('Peak Delay (ms)');
    ylabel('Proportion')
    xlim([min(edges_pd) max(edges_pd)]);
-   ylim([0 0.45]);
+   ylim([0 0.6]);
    set(gca,'xtick', edges_pd(1:2:end), 'xticklabel', edges_pd(1:2:end));
    ytick = 0:0.1:0.6;
    set(gca,'ytick', ytick, 'yticklabel', ytick);
@@ -255,13 +266,24 @@ for i = 1:length(cmapcell)
 
    subplot(3,1,2)
    hold on;
-   hp = plot(edges_hw, pdf_hw_pos, 'o-', 'markersize', markersize, 'markerfacecolor', cmap(1,:), ...
-    'markeredgecolor', cmap(1,:));
-   set(hp, 'color', cmap(1,:));
+%    hp = plot(edges_hw, pdf_hw_pos, 'o-', 'markersize', markersize, 'markerfacecolor', cmap(1,:), ...
+%     'markeredgecolor', cmap(1,:));
+%    set(hp, 'color', cmap(1,:));
+% 
+%    hp = plot(edges_hw, pdf_hw_neg, 's-', 'markersize', markersize, 'markerfacecolor', cmap(3,:), ...
+%     'markeredgecolor', cmap(3,:));
+%    set(hp, 'color', cmap(3,:));
 
-   hp = plot(edges_hw, pdf_hw_neg, 's-', 'markersize', markersize, 'markerfacecolor', cmap(3,:), ...
-    'markeredgecolor', cmap(3,:));
-   set(hp, 'color', cmap(3,:));
+
+
+   hp = plot(edges_hw, pdf_hw_pos, 'ko-', 'markersize', markersize, 'markerfacecolor', 'k');
+    set(hp, 'color', 'k');
+
+   hp = plot(edges_hw, pdf_hw_neg, 's-', 'markersize', markersize, 'markerfacecolor', 0.6*ones(1,3), ...
+    'markeredgecolor', 0.6*ones(1,3));
+    set(hp, 'color', 0.6*ones(1,3));
+
+
 
    xlabel('Half Width (ms)')
    ylabel('Proportion')
@@ -277,13 +299,22 @@ for i = 1:length(cmapcell)
 
    subplot(3,1,3)
    hold on;
-   hp = plot(edges_ccc, pdf_ccc_pos, 'o-', 'markersize', markersize, 'markerfacecolor', cmap(1,:), ...
-    'markeredgecolor', cmap(1,:));
-   set(hp, 'color', cmap(1,:));
+%    hp = plot(edges_ccc, pdf_ccc_pos, 'o-', 'markersize', markersize, 'markerfacecolor', cmap(1,:), ...
+%     'markeredgecolor', cmap(1,:));
+%    set(hp, 'color', cmap(1,:));
+% 
+%    hp = plot(edges_ccc, pdf_ccc_neg, 's-', 'markersize', markersize, 'markerfacecolor', cmap(3,:), ...
+%     'markeredgecolor', cmap(3,:));
+%    set(hp, 'color', cmap(3,:));
 
-   hp = plot(edges_ccc, pdf_ccc_neg, 's-', 'markersize', markersize, 'markerfacecolor', cmap(3,:), ...
-    'markeredgecolor', cmap(3,:));
-   set(hp, 'color', cmap(3,:));
+
+   hp = plot(edges_ccc, pdf_ccc_pos, 'ko-', 'markersize', markersize, 'markerfacecolor', 'k');
+    set(hp, 'color', 'k');
+
+   hp = plot(edges_ccc, pdf_ccc_neg, 's-', 'markersize', markersize, 'markerfacecolor', 0.6*ones(1,3), ...
+    'markeredgecolor', 0.6*ones(1,3));
+    set(hp, 'color', 0.6*ones(1,3));
+
 
    set(gca,'xscale','log')
    axis([0.000001 0.1 0 0.2])

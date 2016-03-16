@@ -1,4 +1,4 @@
-function [larger, smaller] = vs_largersmaller(a,b)
+function [larger, smaller] = iccp_largersmaller(a,b)
 
       larger = zeros( size(a) );
       smaller = zeros(size(b) );
