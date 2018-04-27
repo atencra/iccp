@@ -5,11 +5,13 @@ These functions analyze and plot data from paired neuron analysis. The data was 
 
 The recordings were made with multi-channel electrodes, where each channel was separated by 150 microns, and the channels were linearly organized.
 
-For each channel, many times two or three neurons were recored. The purpose of this analysis is to see the similarities and differences between the neuron's with respect to auditory stimulus preferences and response characteristics. I also estimated information encoding using information theory techniques.
+The goal of the project was to compare the processing of neighboring neurons in the auditory neurons. These neurons were recorded from the same electrode channel, and thus they are located within 75 um of each other. To extract the neurons, the recording trace from each channel must first be spike-sorted. Next, I estimated the cross-correlation from each pair of neuorns from an electrode contact. Positive peaks around zero delay in the function indicate synchronized responses and functional connectivity. Next, how the pairs of neurons process sounds was compared. Finally, I also estimated information encoding using information theory techniques.
 
-Each file begins with iccp, since that is shorthand for inferior colliculus pairs. I included this because it is also the name of the folder that contains the data and it is one way to keep the many files in this folder separate from those in other folders. Unlike Python, in Matlab there is no way to collect pertinent files into one module.
+Each file begins with iccp, since that is shorthand for inferior colliculus pairs. 
 
-Figures and statistical analyses using these functions have been included in a paper that was submitted to a peer-reviewed journal. The paper was returned requesting additional clarifications, and will be resubmitted shortly.
+Figures and statistical analyses using these functions have been included in a paper that was published at the journal Neuroscience.
+
+You can read the paper at: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5031551/
 
 8/8/15
 
