@@ -13,10 +13,3 @@ Figures and statistical analyses using these functions have been included in a p
 
 You can read the paper at: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5031551/
 
-8/8/15
-
-Contributor
-====================
-
-* [Craig Atencio] - Wrote all functions. 
-
